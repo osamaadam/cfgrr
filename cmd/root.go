@@ -15,13 +15,8 @@ var rootCmd = &cobra.Command{
 func runRoot(cmd *cobra.Command, args []string) error {
 	root := args[0]
 
-	files, err := util.FindFiles(root, "testdata/.gocfgrignore", ".*")
+	uniqueFiles, err := util.FindFiles(root, "testdata/.gocfgrignore", ".*")
 
-	if err != nil {
-		return err
-	}
-
-	uniqueFiles, err := util.UniqueFiles(files)
 	if err != nil {
 		return err
 	}
@@ -32,10 +27,10 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		Message:  "Which files would you like to track?",
 		Options:  uniqueFiles,
 		Default:  uniqueFiles,
-		PageSize: 20,
+		PageSize: 15,
 	}
 
-	if err := survey.AskOne(prompt, &filteredFiles); err != nil {
+	if err := survey.AskOne(prompt, &filteredFiles, survey.WithKeepFilter(true)); err != nil {
 		return err
 	}
 

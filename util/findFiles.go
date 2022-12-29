@@ -49,7 +49,12 @@ func FindFiles(rootPath, ignoreFilePath string, patterns ...string) (files []str
 		return nil, err
 	}
 
-	return
+	files, err = UniqueFiles(files)
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
 }
 
 func checkIfIgnored(file string, patterns ...string) (bool, error) {
