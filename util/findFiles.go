@@ -4,9 +4,12 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	"github.com/osamaadam/gocfgr/configfile"
+	"github.com/pkg/errors"
 )
 
-func FindFiles(rootPath, ignoreFilePath string, patterns ...string) (files []string, err error) {
+func FindFiles(rootPath, ignoreFilePath string, patterns ...string) (files []*configfile.ConfigFile, err error) {
 	ignoreGlobs, err := ReadFileLines(ignoreFilePath)
 	if err != nil && !os.IsNotExist(err) {
 		return nil, err
@@ -37,7 +40,11 @@ func FindFiles(rootPath, ignoreFilePath string, patterns ...string) (files []str
 				if isIgnored, err := checkIfIgnored(d.Name(), ignoreGlobs...); err != nil {
 					return err
 				} else if !isIgnored {
-					files = append(files, path)
+					configFile, err := configfile.InitFile(path)
+					if err != nil {
+						return errors.WithStack(err)
+					}
+					files = append(files, configFile)
 				}
 			}
 		}
@@ -45,11 +52,6 @@ func FindFiles(rootPath, ignoreFilePath string, patterns ...string) (files []str
 		return nil
 	})
 
-	if err != nil {
-		return nil, err
-	}
-
-	files, err = UniqueFiles(files)
 	if err != nil {
 		return nil, err
 	}
