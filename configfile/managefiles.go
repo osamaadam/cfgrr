@@ -6,18 +6,15 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 )
 
 // Copies files to a directory, and updates the map file.
-func CopyFiles(copyDir string, files ...*ConfigFile) error {
+func CopyFiles(copyDir, mapFile string, files ...*ConfigFile) error {
 	for _, file := range files {
 		if err := copyFile(copyDir, file); err != nil {
 			return errors.WithStack(err)
 		}
 	}
-
-	mapFile := viper.GetString("map-file")
 
 	if err := UpdateYamlMapFile(filepath.Join(copyDir, mapFile), files...); err != nil {
 		return errors.WithStack(err)
@@ -27,14 +24,12 @@ func CopyFiles(copyDir string, files ...*ConfigFile) error {
 }
 
 // Copies files to a directory, replaces the old file with a symlink, and updates the map file.
-func CopyAndReplaceFiles(copyDir string, files ...*ConfigFile) error {
+func CopyAndReplaceFiles(copyDir, mapFile string, files ...*ConfigFile) error {
 	for _, file := range files {
 		if err := copyAndReplaceFile(copyDir, file); err != nil {
 			return errors.WithStack(err)
 		}
 	}
-
-	mapFile := viper.GetString("map-file")
 
 	if err := UpdateYamlMapFile(filepath.Join(copyDir, mapFile), files...); err != nil {
 		return errors.WithStack(err)

@@ -32,6 +32,7 @@ func FindFiles(rootPath, ignoreFilePath string, patterns ...string) (files []*co
 				}
 				return nil
 			}
+			return nil
 		}
 
 		for _, pattern := range patterns {

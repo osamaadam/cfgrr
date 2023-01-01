@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -10,9 +9,6 @@ import (
 
 var (
 	cfgFile string
-	bkpDir  string
-	ignFile string
-	mapFile string
 )
 
 var rootCmd = &cobra.Command{
@@ -28,31 +24,16 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.cfgrr.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&bkpDir, "backup-dir", "d", "", "backup directory (default is $HOME/.config/cfgrr)")
-	rootCmd.PersistentFlags().StringVarP(&ignFile, "ignore-file", "i", "", "ignore file (default is .cfgrrignore)")
-	rootCmd.PersistentFlags().StringVarP(&mapFile, "map-file", "m", "", "map file (default is cfgrrmap.yaml)")
+	rootCmd.PersistentFlags().StringP("backup-dir", "d", "", "backup directory (default is $HOME/.config/cfgrr)")
+	rootCmd.PersistentFlags().StringP("ignore-file", "i", "", "ignore file (default is .cfgrrignore)")
+	rootCmd.PersistentFlags().StringP("map-file", "m", "", "map file (default is cfgrrmap.yaml)")
 
 	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
 	viper.BindPFlag("backup-dir", rootCmd.PersistentFlags().Lookup("backup-dir"))
 	viper.BindPFlag("map-file", rootCmd.PersistentFlags().Lookup("map-file"))
 
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-
-	userConfig, _ := os.UserConfigDir()
-	if userConfig == "" {
-		userConfig = filepath.Join(homedir, ".config")
-	}
-
-	defaultConfigDir := filepath.Join(userConfig, "cfgrr")
-
-	viper.SetDefault("config", filepath.Join(homedir, ".cfgrr.yaml"))
-	viper.SetDefault("backup-dir", defaultConfigDir)
-	viper.SetDefault("map-file", "cfgrrmap.yaml")
-
 	rootCmd.AddCommand(restoreCmd)
+	rootCmd.AddCommand(backupCmd)
 }
 
 func initConfig() {
