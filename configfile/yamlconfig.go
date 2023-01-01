@@ -10,7 +10,7 @@ import (
 
 func UpdateYamlFile(path string, files ...*ConfigFile) error {
 	m := make(map[string]*ConfigFile, len(files))
-	if exists := CheckFileExists(path); exists {
+	if exists := checkFileExists(path); exists {
 		readMap, err := ReadYamlFile(path)
 		if err != nil {
 			return errors.WithStack(err)
@@ -26,7 +26,11 @@ func UpdateYamlFile(path string, files ...*ConfigFile) error {
 		return errors.WithStack(err)
 	}
 
-	return tidyYamlFile(path)
+	if err := tidyYamlFile(path); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func ReadYamlFile(path string) (map[string]*ConfigFile, error) {
@@ -43,6 +47,29 @@ func ReadYamlFile(path string) (map[string]*ConfigFile, error) {
 	}
 
 	return m, nil
+}
+
+func RestoreConfig(path string) error {
+	if err := tidyYamlFile(path); err != nil {
+		return errors.WithStack(err)
+	}
+
+	m, err := ReadYamlFile(path)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	fileArray := make([]*ConfigFile, 0, len(m))
+
+	for _, file := range m {
+		fileArray = append(fileArray, file)
+	}
+
+	if err := RestoreSymLinks(filepath.Dir(path), fileArray...); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func writeYamlFileRaw(path string, m interface{}) error {
@@ -72,7 +99,7 @@ func tidyYamlFile(path string) error {
 
 	for _, file := range m {
 		filePath := filepath.Join(baseDir, file.HashShort())
-		if !CheckFileExists(filePath) {
+		if !checkFileExists(filePath) {
 			delete(m, file.HashShort())
 		}
 	}
