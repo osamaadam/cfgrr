@@ -22,7 +22,7 @@ func PromptForFileSelection(files []*cf.ConfigFile) (selectedFiles []*cf.ConfigF
 	m, arr := promptWorkAround(files)
 
 	prompt := &survey.MultiSelect{
-		Message:  "Which files would you like to track?",
+		Message:  "Which files would you like to track? (this will overwrite existing files)",
 		Options:  arr,
 		PageSize: 10,
 	}

@@ -52,6 +52,15 @@ func (cf *ConfigFile) Name() string {
 	return filepath.Base(cf.Path)
 }
 
+func (cf *ConfigFile) PathAbs() string {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return ""
+	}
+
+	return filepath.Join(homedir, cf.Path)
+}
+
 // Returns the hash of the Path.
 func (cf *ConfigFile) Hash() string {
 	hasher := sha1.New()

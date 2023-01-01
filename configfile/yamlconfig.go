@@ -8,27 +8,25 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func CreateYamlFile(path string, files ...*ConfigFile) error {
+func UpdateYamlFile(path string, files ...*ConfigFile) error {
 	m := make(map[string]*ConfigFile, len(files))
+	if exists := CheckFileExists(path); exists {
+		readMap, err := ReadYamlFile(path)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		m = readMap
+	}
 
 	for _, file := range files {
 		m[file.HashShort()] = file
 	}
 
-	marshalledData, err := yaml.Marshal(&m)
-	if err != nil {
+	if err := writeYamlFileRaw(path, m); err != nil {
 		return errors.WithStack(err)
 	}
 
-	if err := ensureDirExists(path); err != nil {
-		return errors.WithStack(err)
-	}
-
-	if err := os.WriteFile(correctFileName(path), marshalledData, 0644); err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
+	return tidyYamlFile(path)
 }
 
 func ReadYamlFile(path string) (map[string]*ConfigFile, error) {
@@ -47,6 +45,41 @@ func ReadYamlFile(path string) (map[string]*ConfigFile, error) {
 	return m, nil
 }
 
+func writeYamlFileRaw(path string, m interface{}) error {
+	marshalledData, err := yaml.Marshal(&m)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if err := ensureDirExists(filepath.Dir(path)); err != nil {
+		return errors.WithStack(err)
+	}
+
+	if err := os.WriteFile(correctFileName(path), marshalledData, 0644); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+func tidyYamlFile(path string) error {
+	m, err := ReadYamlFile(path)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	baseDir := filepath.Dir(path)
+
+	for _, file := range m {
+		filePath := filepath.Join(baseDir, file.HashShort())
+		if !CheckFileExists(filePath) {
+			delete(m, file.HashShort())
+		}
+	}
+
+	return writeYamlFileRaw(path, m)
+}
+
 func correctFileName(path string) string {
 	path = filepath.Clean(path)
 	ext := filepath.Ext(path)
@@ -58,8 +91,7 @@ func correctFileName(path string) string {
 }
 
 func ensureDirExists(path string) error {
-	path = filepath.Clean(path)
-	dir := filepath.Dir(path)
+	dir := filepath.Clean(path)
 
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return errors.WithStack(err)
