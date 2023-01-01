@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/osamaadam/gocfgr/configfile"
+	"github.com/osamaadam/gocfgr/prompt"
 	"github.com/osamaadam/gocfgr/util"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -20,32 +20,14 @@ func runRoot(cmd *cobra.Command, args []string) error {
 
 	configFiles, err := util.FindFiles(root, "testdata/.gocfgrignore", ".*")
 
-	filesMap := make(map[string]*configfile.ConfigFile)
-
-	for _, file := range configFiles {
-		filesMap[file.String()] = file
-	}
-
 	if err != nil {
 		return err
 	}
 
-	filteredFiles := []string{}
+	selectedFiles, err := prompt.PromptForFileSelection(configFiles)
 
-	prompt := &survey.MultiSelect{
-		Message:  "Which files would you like to track?",
-		Options:  configfile.ArrToString(configFiles),
-		PageSize: 15,
-	}
-
-	if err := survey.AskOne(prompt, &filteredFiles, survey.WithKeepFilter(true)); err != nil {
-		return err
-	}
-
-	selectedFiles := make([]*configfile.ConfigFile, 0, len(filteredFiles))
-
-	for _, file := range filteredFiles {
-		selectedFiles = append(selectedFiles, filesMap[file])
+	if err != nil {
+		return errors.WithStack(err)
 	}
 
 	fmt.Println(selectedFiles)
