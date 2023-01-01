@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	cf "github.com/osamaadam/gocfgr/configfile"
 	"github.com/osamaadam/gocfgr/prompt"
 	"github.com/osamaadam/gocfgr/util"
 	"github.com/pkg/errors"
@@ -30,7 +31,20 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		return errors.WithStack(err)
 	}
 
-	fmt.Println(selectedFiles)
+	testFilePath := "./testdata/config.yaml"
+
+	if err := cf.CreateYamlFile(testFilePath, selectedFiles...); err != nil {
+		return errors.WithStack(err)
+	}
+
+	readFiles, err := cf.ReadYamlFile(testFilePath)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	for _, v := range readFiles {
+		fmt.Println(v)
+	}
 
 	return nil
 }

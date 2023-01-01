@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// FindFiles finds files in the given rootPath that match the given patterns.
 func FindFiles(rootPath, ignoreFilePath string, patterns ...string) (files []*configfile.ConfigFile, err error) {
 	ignoreGlobs, err := ReadFileLines(ignoreFilePath)
 	if err != nil && !os.IsNotExist(err) {
@@ -59,6 +60,7 @@ func FindFiles(rootPath, ignoreFilePath string, patterns ...string) (files []*co
 	return files, nil
 }
 
+// Checks if a file is ignored by the ignore list.
 func checkIfIgnored(file string, patterns ...string) (bool, error) {
 	for _, pattern := range patterns {
 		if matches, err := filepath.Match(pattern, file); err != nil {

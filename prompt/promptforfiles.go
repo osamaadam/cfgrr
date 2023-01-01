@@ -6,7 +6,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-func PromptWorkAround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr []string) {
+// Creates a pair of a map, and a slice of strings from a slice of ConfigFiles.
+func promptWorkAround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr []string) {
 	m = make(map[string]*cf.ConfigFile, len(files))
 	for _, file := range files {
 		readableName := file.String()
@@ -16,8 +17,9 @@ func PromptWorkAround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr 
 	return m, arr
 }
 
+// Prompts the user to select files from a list of ConfigFiles.
 func PromptForFileSelection(files []*cf.ConfigFile) (selectedFiles []*cf.ConfigFile, err error) {
-	m, arr := PromptWorkAround(files)
+	m, arr := promptWorkAround(files)
 
 	prompt := &survey.MultiSelect{
 		Message:  "Which files would you like to track?",

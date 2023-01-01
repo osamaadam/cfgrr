@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// ReadFileLines reads a file line by line and returns a slice of strings.
 func ReadFileLines(path string) (lines []string, err error) {
 	file, err := os.Open(path)
 	if err != nil {

@@ -13,6 +13,12 @@ type ConfigFile struct {
 	Path string
 }
 
+/*
+Tidies the path before initializing the object.
+
+	cf, _ := InitFile("~/path/../path/.config")
+	// cf.Path = "path/.config"
+*/
 func InitFile(path string) (file *ConfigFile, err error) {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
@@ -36,10 +42,17 @@ func InitFile(path string) (file *ConfigFile, err error) {
 	return file, nil
 }
 
+/*
+Returns the base name if the file.
+
+For example if the Path = "/some/loc/somewhere/.config" ->
+Name = ".config"
+*/
 func (cf *ConfigFile) Name() string {
 	return filepath.Base(cf.Path)
 }
 
+// Returns the hash of the Path.
 func (cf *ConfigFile) Hash() string {
 	hasher := sha1.New()
 	hasher.Write([]byte(cf.Path))
@@ -48,6 +61,11 @@ func (cf *ConfigFile) Hash() string {
 	return hash
 }
 
+func (cf *ConfigFile) HashShort() string {
+	return cf.Hash()[:8]
+}
+
+// Makes it printable, functions like fmt.Println know to call this automatically.
 func (cf *ConfigFile) String() string {
 	return cf.Name() + " - " + "(" + filepath.Join("~", cf.Path) + ")"
 }
