@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/osamaadam/gocfgr/configfile"
+	"github.com/osamaadam/cfgrr/configfile"
 	"github.com/pkg/errors"
 )
 

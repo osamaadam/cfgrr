@@ -2,7 +2,7 @@ package prompt
 
 import (
 	"github.com/AlecAivazis/survey/v2"
-	cf "github.com/osamaadam/gocfgr/configfile"
+	cf "github.com/osamaadam/cfgrr/configfile"
 	"github.com/pkg/errors"
 )
 

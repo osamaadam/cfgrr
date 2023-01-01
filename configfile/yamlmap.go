@@ -8,10 +8,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func UpdateYamlFile(path string, files ...*ConfigFile) error {
+// Updates the map file with the new files.
+func UpdateYamlMapFile(path string, files ...*ConfigFile) error {
 	m := make(map[string]*ConfigFile, len(files))
-	if exists := checkFileExists(path); exists {
-		readMap, err := ReadYamlFile(path)
+	if exists := CheckFileExists(path); exists {
+		readMap, err := ReadYamlMapFile(path)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -26,14 +27,15 @@ func UpdateYamlFile(path string, files ...*ConfigFile) error {
 		return errors.WithStack(err)
 	}
 
-	if err := tidyYamlFile(path); err != nil {
+	if err := tidyYamlMapFile(path); err != nil {
 		return errors.WithStack(err)
 	}
 
 	return nil
 }
 
-func ReadYamlFile(path string) (map[string]*ConfigFile, error) {
+// Reads the map file and returns a map of the files.
+func ReadYamlMapFile(path string) (map[string]*ConfigFile, error) {
 	m := make(map[string]*ConfigFile)
 
 	file, err := os.Open(path)
@@ -50,11 +52,11 @@ func ReadYamlFile(path string) (map[string]*ConfigFile, error) {
 }
 
 func RestoreConfig(path string) error {
-	if err := tidyYamlFile(path); err != nil {
+	if err := tidyYamlMapFile(path); err != nil {
 		return errors.WithStack(err)
 	}
 
-	m, err := ReadYamlFile(path)
+	m, err := ReadYamlMapFile(path)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -82,15 +84,15 @@ func writeYamlFileRaw(path string, m interface{}) error {
 		return errors.WithStack(err)
 	}
 
-	if err := os.WriteFile(correctFileName(path), marshalledData, 0644); err != nil {
+	if err := os.WriteFile(correctYamlFileName(path), marshalledData, 0644); err != nil {
 		return errors.WithStack(err)
 	}
 
 	return nil
 }
 
-func tidyYamlFile(path string) error {
-	m, err := ReadYamlFile(path)
+func tidyYamlMapFile(path string) error {
+	m, err := ReadYamlMapFile(path)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -99,7 +101,7 @@ func tidyYamlFile(path string) error {
 
 	for _, file := range m {
 		filePath := filepath.Join(baseDir, file.HashShort())
-		if !checkFileExists(filePath) {
+		if !CheckFileExists(filePath) {
 			delete(m, file.HashShort())
 		}
 	}
@@ -107,7 +109,7 @@ func tidyYamlFile(path string) error {
 	return writeYamlFileRaw(path, m)
 }
 
-func correctFileName(path string) string {
+func correctYamlFileName(path string) string {
 	path = filepath.Clean(path)
 	ext := filepath.Ext(path)
 	if ext != ".yaml" && ext != ".yml" {

@@ -6,9 +6,10 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
-// Copies files to a directory, and updates the .gocfgr.yaml file.
+// Copies files to a directory, and updates the map file.
 func CopyFiles(copyDir string, files ...*ConfigFile) error {
 	for _, file := range files {
 		if err := copyFile(copyDir, file); err != nil {
@@ -16,14 +17,16 @@ func CopyFiles(copyDir string, files ...*ConfigFile) error {
 		}
 	}
 
-	if err := UpdateYamlFile(filepath.Join(copyDir, ".gocfgr.yaml"), files...); err != nil {
+	mapFile := viper.GetString("map-file")
+
+	if err := UpdateYamlMapFile(filepath.Join(copyDir, mapFile), files...); err != nil {
 		return errors.WithStack(err)
 	}
 
 	return nil
 }
 
-// Copies files to a directory, replaces the old file with a symlink, and updates the .gocfgr.yaml file.
+// Copies files to a directory, replaces the old file with a symlink, and updates the map file.
 func CopyAndReplaceFiles(copyDir string, files ...*ConfigFile) error {
 	for _, file := range files {
 		if err := copyAndReplaceFile(copyDir, file); err != nil {
@@ -31,7 +34,9 @@ func CopyAndReplaceFiles(copyDir string, files ...*ConfigFile) error {
 		}
 	}
 
-	if err := UpdateYamlFile(filepath.Join(copyDir, ".gocfgr.yaml"), files...); err != nil {
+	mapFile := viper.GetString("map-file")
+
+	if err := UpdateYamlMapFile(filepath.Join(copyDir, mapFile), files...); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -48,7 +53,7 @@ func RestoreSymLinks(backupDir string, files ...*ConfigFile) error {
 	return nil
 }
 
-func checkFileExists(path string) bool {
+func CheckFileExists(path string) bool {
 	_, err := os.Stat(path)
 	return !os.IsNotExist(err)
 }
@@ -94,7 +99,7 @@ func copyFile(copyDir string, file *ConfigFile) error {
 }
 
 func restoreSymLink(backupDir string, file *ConfigFile) error {
-	if exists := checkFileExists(file.PathAbs()); exists {
+	if exists := CheckFileExists(file.PathAbs()); exists {
 		if err := os.Remove(file.PathAbs()); err != nil {
 			return errors.WithStack(err)
 		}

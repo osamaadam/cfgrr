@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/osamaadam/gocfgr/cmd"
+	"github.com/osamaadam/cfgrr/cmd"
 )
 
 func main() {
