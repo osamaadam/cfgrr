@@ -70,7 +70,7 @@ func copyAndReplaceFile(copyDir string, file *ConfigFile) error {
 }
 
 func copyFile(copyDir string, file *ConfigFile) error {
-	if err := ensureDirExists(copyDir); err != nil {
+	if err := EnsureDirExists(copyDir); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -100,7 +100,7 @@ func restoreSymLink(backupDir string, file *ConfigFile) error {
 		}
 	}
 
-	if err := ensureDirExists(filepath.Dir(file.PathAbs())); err != nil {
+	if err := EnsureDirExists(filepath.Dir(file.PathAbs())); err != nil {
 		return errors.WithStack(err)
 	}
 

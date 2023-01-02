@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
+	"github.com/osamaadam/cfgrr/ignorefile"
 	"github.com/osamaadam/cfgrr/prompt"
 	"github.com/osamaadam/cfgrr/util"
 	"github.com/pkg/errors"
@@ -29,8 +30,6 @@ var backupCmd = &cobra.Command{
 }
 
 func runBackup(cmd *cobra.Command, args []string) error {
-	// TODO: Default ignore file should be initialized on init if it doesn't exist
-	// This ignore file should include files like .git, node_modules, etc.
 	root := args[0]
 
 	mapFile := viper.GetString("map_file")
@@ -39,7 +38,11 @@ func runBackup(cmd *cobra.Command, args []string) error {
 
 	ignFilePath := filepath.Join(backupDir, ignFile)
 
-	files, err := util.FindFiles(root, ignFilePath, configPatterns...)
+	if exists := cf.CheckFileExists(ignFilePath); !exists {
+		ignorefile.InitIgnoreFile(ignFilePath, ignFilePath)
+	}
+
+	files, err := util.FindFiles(root, ignFilePath, backupDir, configPatterns...)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -57,6 +60,6 @@ func runBackup(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	defaultPatterns := []string{".*", "*config*"}
+	defaultPatterns := []string{`**/.*`, `**/*config*`}
 	backupCmd.Flags().StringSliceVarP(&configPatterns, "pattern", "p", defaultPatterns, "backup files matching the given pattern .")
 }

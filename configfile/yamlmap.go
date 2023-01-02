@@ -80,7 +80,7 @@ func writeYamlFileRaw(path string, m interface{}) error {
 		return errors.WithStack(err)
 	}
 
-	if err := ensureDirExists(filepath.Dir(path)); err != nil {
+	if err := EnsureDirExists(filepath.Dir(path)); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -119,7 +119,7 @@ func correctYamlFileName(path string) string {
 	return path
 }
 
-func ensureDirExists(path string) error {
+func EnsureDirExists(path string) error {
 	dir := filepath.Clean(path)
 
 	if err := os.MkdirAll(dir, 0755); err != nil {

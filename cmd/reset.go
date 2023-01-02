@@ -9,13 +9,13 @@ import (
 )
 
 var resetCmd = &cobra.Command{
-	Use:                "reset",
-	Aliases:            []string{"rs", "rst"},
-	RunE:               reset,
-	Args:               cobra.NoArgs,
-	DisableFlagParsing: true,
-	Short:              "Reset the configuration files to their original state",
-	Long:               "Reset the configuration files to their original state, this will remove the configuration file, and running the program will create a new one with the default values",
+	Use:     "reset",
+	Aliases: []string{"rs", "rst"},
+	RunE:    reset,
+	Args:    cobra.NoArgs,
+	Short:   "Reset the configuration files to their original state",
+	Long: `Reset the configuration files to their original state
+This will remove the configuration file, and running the program will create a new one with the default values`,
 }
 
 func reset(cmd *cobra.Command, args []string) error {

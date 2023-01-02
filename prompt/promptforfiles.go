@@ -1,6 +1,8 @@
 package prompt
 
 import (
+	"sort"
+
 	"github.com/AlecAivazis/survey/v2"
 	cf "github.com/osamaadam/cfgrr/configfile"
 	"github.com/pkg/errors"
@@ -14,6 +16,9 @@ func promptWorkAround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr 
 		m[readableName] = file
 		arr = append(arr, readableName)
 	}
+
+	sort.Strings(arr)
+
 	return m, arr
 }
 
