@@ -4,6 +4,10 @@
 
 At the time of typing this, Jan 2023, `cfgrr` should be able to find all your config files, add them to some kind of directory structure, track them with git, and give you the option to push them to your private git remote, and resore them at will.
 
+## Installation
+
+Download the binary from the [releases](https://github.com/osamaadam/cfgrr/releases) page, and put it somewhere in your `$PATH`.
+
 ## Current progress
 
 Currently, `cfgrr` is able to find config files matching certain patterns (currently _"\*\*/.\*"_, and _"\*\*/\*config\*"_). It is also able to restore backed up files.
