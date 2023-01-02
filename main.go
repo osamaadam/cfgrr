@@ -11,9 +11,9 @@ import (
 
 type Config struct {
 	Config     string `mapstructure:"config"`
-	BackupDir  string `mapstructure:"backup-dir"`
-	MapFile    string `mapstructure:"map-file"`
-	IgnoreFile string `mapstructure:"ignore-file"`
+	BackupDir  string `mapstructure:"backup_dir"`
+	MapFile    string `mapstructure:"map_file"`
+	IgnoreFile string `mapstructure:"ignore_file"`
 }
 
 func main() {
@@ -38,10 +38,9 @@ func init() {
 
 	defaultConfigDir := filepath.Join(userConfig, "cfgrr")
 
-	viper.SetDefault("config", filepath.Join(homedir, ".cfgrr.yaml"))
-	viper.SetDefault("backup-dir", defaultConfigDir)
-	viper.SetDefault("map-file", "cfgrrmap.yaml")
-	viper.SetDefault("ignore-file", ".cfgrrignore")
+	viper.SetDefault("backup_dir", defaultConfigDir)
+	viper.SetDefault("map_file", "cfgrrmap.yaml")
+	viper.SetDefault("ignore_file", ".cfgrrignore")
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {

@@ -23,13 +23,13 @@ var restoreCmd = &cobra.Command{
 }
 
 func restore(cmd *cobra.Command, args []string) error {
-	dir := viper.GetString("backup-dir")
+	dir := viper.GetString("backup_dir")
 
 	if exists := cf.CheckFileExists(dir); !exists {
 		return errors.New("the directory doesn't exist")
 	}
 
-	mapFile := viper.GetString("map-file")
+	mapFile := viper.GetString("map_file")
 
 	if err := cf.RestoreConfig(filepath.Join(dir, mapFile)); err != nil {
 		return errors.WithStack(err)

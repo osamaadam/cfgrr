@@ -33,9 +33,9 @@ func runBackup(cmd *cobra.Command, args []string) error {
 	// This ignore file should include files like .git, node_modules, etc.
 	root := args[0]
 
-	mapFile := viper.GetString("map-file")
-	ignFile := viper.GetString("ignore-file")
-	backupDir := viper.GetString("backup-dir")
+	mapFile := viper.GetString("map_file")
+	ignFile := viper.GetString("ignore_file")
+	backupDir := viper.GetString("backup_dir")
 
 	ignFilePath := filepath.Join(backupDir, ignFile)
 

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -22,15 +23,18 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
 
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.cfgrr.yaml)")
-	rootCmd.PersistentFlags().StringP("backup-dir", "d", "", "backup directory (default is $HOME/.config/cfgrr)")
-	rootCmd.PersistentFlags().StringP("ignore-file", "i", "", "ignore file (default is .cfgrrignore)")
-	rootCmd.PersistentFlags().StringP("map-file", "m", "", "map file (default is cfgrrmap.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", filepath.Join(homedir, ".cfgrr.yaml"), "config file")
+	rootCmd.PersistentFlags().StringP("backup_dir", "d", "", "backup directory (default $HOME/.config/cfgrr)")
+	rootCmd.PersistentFlags().StringP("ignore_file", "i", "", "ignore file (default .cfgrrignore)")
+	rootCmd.PersistentFlags().StringP("map_file", "m", "", "map file (default cfgrrmap.yaml)")
 
-	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
-	viper.BindPFlag("backup-dir", rootCmd.PersistentFlags().Lookup("backup-dir"))
-	viper.BindPFlag("map-file", rootCmd.PersistentFlags().Lookup("map-file"))
+	viper.BindPFlag("backup_dir", rootCmd.PersistentFlags().Lookup("backup_dir"))
+	viper.BindPFlag("map_file", rootCmd.PersistentFlags().Lookup("map_file"))
 
 	rootCmd.AddCommand(restoreCmd)
 	rootCmd.AddCommand(backupCmd)
@@ -54,7 +58,6 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; creating it.
-			// TODO: Flag arguments shouldn't be hardcoded into the config file.
 			if err := viper.SafeWriteConfig(); err != nil {
 				panic(err)
 			}
