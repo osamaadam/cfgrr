@@ -34,6 +34,8 @@ func init() {
 
 	rootCmd.AddCommand(restoreCmd)
 	rootCmd.AddCommand(backupCmd)
+	rootCmd.AddCommand(setCmd)
+	rootCmd.AddCommand(unsetCmd)
 }
 
 func initConfig() {

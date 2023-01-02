@@ -9,6 +9,13 @@ import (
 	"github.com/spf13/viper"
 )
 
+type Config struct {
+	Config     string `mapstructure:"config"`
+	BackupDir  string `mapstructure:"backup-dir"`
+	MapFile    string `mapstructure:"map-file"`
+	IgnoreFile string `mapstructure:"ignore-file"`
+}
+
 func main() {
 	if err := cmd.Execute(); err != nil {
 		fmt.Print(err)
