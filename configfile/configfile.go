@@ -20,6 +20,10 @@ Tidies the path before initializing the object.
 	// cf.Path = "path/.config"
 */
 func InitFile(path string) (file *ConfigFile, err error) {
+	if path == "" {
+		return nil, errors.New("path can't be empty")
+	}
+
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		return nil, errors.WithMessage(err, "couldn't find user's home dir")
@@ -52,6 +56,8 @@ func (cf *ConfigFile) Name() string {
 	return filepath.Base(cf.Path)
 }
 
+// Returns the absolute path of the file.
+// Relies on there being a $HOME environment variable.
 func (cf *ConfigFile) PathAbs() string {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
@@ -70,6 +76,7 @@ func (cf *ConfigFile) Hash() string {
 	return hash
 }
 
+// Returns a truncated hash of the Path.
 func (cf *ConfigFile) HashShort() string {
 	return cf.Hash()[:8]
 }

@@ -10,7 +10,6 @@ import (
 )
 
 type Config struct {
-	Config     string `mapstructure:"config"`
 	BackupDir  string `mapstructure:"backup_dir"`
 	MapFile    string `mapstructure:"map_file"`
 	IgnoreFile string `mapstructure:"ignore_file"`

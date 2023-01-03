@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
+	"github.com/osamaadam/cfgrr/core"
 	"github.com/osamaadam/cfgrr/ignorefile"
 	"github.com/osamaadam/cfgrr/prompt"
-	"github.com/osamaadam/cfgrr/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -42,7 +42,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 		ignorefile.InitIgnoreFile(ignFilePath, ignFilePath)
 	}
 
-	files, err := util.FindFiles(root, ignFilePath, backupDir, configPatterns...)
+	files, err := core.FindFiles(root, ignFilePath, backupDir, configPatterns...)
 	if err != nil {
 		return errors.WithStack(err)
 	}

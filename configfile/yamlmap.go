@@ -51,6 +51,8 @@ func ReadYamlMapFile(path string) (map[string]*ConfigFile, error) {
 	return m, nil
 }
 
+// Restores files from the backup directory to their original locations.
+// This will run tidyYamlMapFile() to remove any files that are no longer present.
 func RestoreConfig(path string) error {
 	if err := tidyYamlMapFile(path); err != nil {
 		return errors.WithStack(err)
@@ -74,6 +76,7 @@ func RestoreConfig(path string) error {
 	return nil
 }
 
+// Writes a yaml file to the specified path.
 func writeYamlFileRaw(path string, m interface{}) error {
 	marshalledData, err := yaml.Marshal(&m)
 	if err != nil {
@@ -91,6 +94,7 @@ func writeYamlFileRaw(path string, m interface{}) error {
 	return nil
 }
 
+// Deletes files from the map file that are no longer present.
 func tidyYamlMapFile(path string) error {
 	m, err := ReadYamlMapFile(path)
 	if err != nil {
@@ -109,6 +113,7 @@ func tidyYamlMapFile(path string) error {
 	return writeYamlFileRaw(path, m)
 }
 
+// Ensures the yaml file has the correct extension.
 func correctYamlFileName(path string) string {
 	path = filepath.Clean(path)
 	ext := filepath.Ext(path)
@@ -117,14 +122,4 @@ func correctYamlFileName(path string) string {
 	}
 
 	return path
-}
-
-func EnsureDirExists(path string) error {
-	dir := filepath.Clean(path)
-
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
 }
