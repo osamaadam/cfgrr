@@ -18,13 +18,15 @@ var (
 )
 
 var backupCmd = &cobra.Command{
-	Use:     "backup",
+	Use:     "backup [root_dir]",
 	Short:   "Backup the configuration files to the backup directory",
 	Aliases: []string{"b", "bkp"},
 	Args:    cobra.ExactArgs(1),
 	Example: strings.Join([]string{
 		`cfgrr backup /path/to/root/config/dir`,
 		`cfgrr b ~/`,
+		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*"`,
+		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*" -d /path/to/backup/dir -i .cfgrrignore -m cfgrrmap.yaml`,
 	}, "\n"),
 	RunE: runBackup,
 }

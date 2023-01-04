@@ -17,7 +17,8 @@ var restoreCmd = &cobra.Command{
 	RunE:    restore,
 	Example: strings.Join([]string{
 		`cfgrr restore`,
-		`cfgrr restore -d /path/to/config/dir`,
+		`cfgrr r -d /path/to/config/dir`,
+		`cfgrr r -d /path/to/config/dir -m cfgrrmap.yaml`,
 	}, "\n"),
 	Args: cobra.NoArgs,
 }

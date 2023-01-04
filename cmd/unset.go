@@ -12,11 +12,15 @@ import (
 )
 
 var unsetCmd = &cobra.Command{
-	Use:     "unset",
+	Use:     "unset [key]",
 	Aliases: []string{"u"},
 	Short:   "Unset the value of a configuration variable",
 	Args:    cobra.MinimumNArgs(1),
 	RunE:    runUnset,
+	Example: strings.Join([]string{
+		`cfgrr unset backup_dir`,
+		`cfgrr u map_file`,
+	}, "\n"),
 }
 
 func runUnset(cmd *cobra.Command, args []string) error {

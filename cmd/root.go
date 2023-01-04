@@ -14,7 +14,7 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "cfgrr",
+	Use:   "cfgrr [sub_command]",
 	Short: `A one-hit solution for your configuration trouble`,
 }
 
