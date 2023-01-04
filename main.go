@@ -15,8 +15,13 @@ type Config struct {
 	IgnoreFile string `mapstructure:"ignore_file"`
 }
 
+var (
+	version   string
+	builddate string
+)
+
 func main() {
-	if err := cmd.Execute(); err != nil {
+	if err := cmd.Execute(version, builddate); err != nil {
 		fmt.Print(err)
 	}
 }

@@ -6,7 +6,27 @@ At the time of typing this, Jan 2023, `cfgrr` should be able to find all your co
 
 ## Installation
 
-Download the binary from the [releases](https://github.com/osamaadam/cfgrr/releases) page, and put it somewhere in your `$PATH`.
+### Download the binary
+
+Download the latest binary from [here](https://github.com/osamaadam/cfgrr/releases/latest/cfgrr), and add the file to your `$PATH`.
+
+### Install from source
+
+> Note: You need to have [Go](https://golang.org/) installed.
+
+First, clone the repository:
+
+```sh
+git clone https://github.com/osamaadam/cfgrr.git
+```
+
+Then run the install script:
+
+```sh
+make install
+```
+
+The binary would be installed at `${HOME}/go/bin/cfgrr`
 
 ## Current progress
 

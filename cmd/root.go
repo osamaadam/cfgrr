@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -17,7 +18,11 @@ var rootCmd = &cobra.Command{
 	Short: `A one-hit solution for your configuration trouble`,
 }
 
-func Execute() error {
+func Execute(version, buildDate string) error {
+	if version != "" && buildDate != "" {
+		rootCmd.SetVersionTemplate(fmt.Sprintf("cfgrr %s (built on %s)\n", version, buildDate))
+		rootCmd.Version = version
+	}
 	return rootCmd.Execute()
 }
 
