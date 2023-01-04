@@ -18,9 +18,9 @@ var rootCmd = &cobra.Command{
 	Short: `A one-hit solution for your configuration trouble`,
 }
 
-func Execute(version, buildDate string) error {
-	if version != "" && buildDate != "" {
-		rootCmd.SetVersionTemplate(fmt.Sprintf("cfgrr %s (built on %s)\n", version, buildDate))
+func Execute(version, tagdate string) error {
+	if version != "" && tagdate != "" {
+		rootCmd.SetVersionTemplate(fmt.Sprintf("cfgrr %s (published on %s)\n", version, tagdate))
 		rootCmd.Version = version
 	}
 	return rootCmd.Execute()

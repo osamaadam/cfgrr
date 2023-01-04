@@ -2,12 +2,12 @@
 
 NAME=cfgrr
 BUILD_VERSION=$(shell git describe --tags --always)
-BUILD_DATE=$(shell date -R)
+TAG_DATE=$(shell git log -1 --format=%cd --date=rfc $(BUILD_VERSION))
 INSTALL_DIR=${HOME}/go/bin
 INSTALL_TARGET=$(INSTALL_DIR)/$(NAME)
 
 build:
-	GOOS=linux go build -ldflags '-s -w -X "main.version=$(BUILD_VERSION)" -X "main.builddate=$(BUILD_DATE)"' -o bin/$(NAME)
+	GOOS=linux go build -ldflags '-s -w -X "main.version=$(BUILD_VERSION)" -X "main.tagdate=$(TAG_DATE)"' -o bin/$(NAME)
 
 clean:
 	rm -rf bin

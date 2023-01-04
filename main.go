@@ -16,12 +16,12 @@ type Config struct {
 }
 
 var (
-	version   string
-	builddate string
+	version string
+	tagdate string
 )
 
 func main() {
-	if err := cmd.Execute(version, builddate); err != nil {
+	if err := cmd.Execute(version, tagdate); err != nil {
 		fmt.Print(err)
 	}
 }
