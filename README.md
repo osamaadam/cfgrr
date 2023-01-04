@@ -30,6 +30,26 @@ make install
 
 The binary would be installed at `${HOME}/go/bin/cfgrr`
 
+## TL;DR
+
+#### To backup:
+
+```sh
+cfgrr b ~/
+```
+
+Then choose the files you'd like to backup.
+
+:sparkles: Poof! A backup of your files will be at `~/.config/cfgrr`.
+
+#### To restore:
+
+> (assuming you have the backup folder at `~/.config/cfgrr`)
+
+```sh
+cfgrr r
+```
+
 ## Current progress
 
 Currently, `cfgrr` is able to find config files matching certain patterns (currently _"\*\*/.\*"_, and _"\*\*/\*config\*"_). It is also able to restore backed up files.
@@ -119,26 +139,4 @@ cfgrr unset [key]
 
 ```sh
 cfgrr unset backup_dir
-```
-
-## TL;DR
-
-#### To backup:
-
-```sh
-cfgrr b ~/
-```
-
-Then choose the files you'd like to backup.
-
-:sparkles: Poof! A backup of your files will be at `~/.config/cfgrr`.
-
----
-
-#### To restore:
-
-> (assuming you have the backup folder at `~/.config/cfgrr`)
-
-```sh
-cfgrr r
 ```
