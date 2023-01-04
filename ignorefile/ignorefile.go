@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func InitIgnoreFile(path, backupDir string) error {
+func InitIgnoreFile(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		if err := cf.EnsureDirExists(filepath.Dir(path)); err != nil {
 			return errors.WithStack(err)

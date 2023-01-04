@@ -32,7 +32,7 @@ func FindFiles(rootPath, ignoreFilePath, backupDir string, patterns ...string) (
 		if d.IsDir() {
 			// Check if the directory is ignored.
 			if len(ignoreGlobs) > 0 {
-				if ignored := checkIfMatches(path, ignoreGlobs...); ignored {
+				if ignored := CheckIfGlobsMatch(path, ignoreGlobs...); ignored {
 					return filepath.SkipDir
 				}
 			}
@@ -41,9 +41,9 @@ func FindFiles(rootPath, ignoreFilePath, backupDir string, patterns ...string) (
 		}
 
 		// Check if file matches any of the given patterns.
-		if matches := checkIfMatches(path, patterns...); matches {
+		if matches := CheckIfGlobsMatch(path, patterns...); matches {
 			// Check if file is ignored.
-			if ignored := checkIfMatches(path, ignoreGlobs...); !ignored {
+			if ignored := CheckIfGlobsMatch(path, ignoreGlobs...); !ignored {
 				file, err := configfile.InitFile(path)
 				if err != nil {
 					return errors.WithStack(err)
@@ -64,7 +64,7 @@ func FindFiles(rootPath, ignoreFilePath, backupDir string, patterns ...string) (
 }
 
 // Checks if the given file matches any of the given patterns.
-func checkIfMatches(file string, patterns ...string) bool {
+func CheckIfGlobsMatch(file string, patterns ...string) bool {
 	for _, pattern := range patterns {
 		if matches, _ := zglob.Match(pattern, file); matches {
 			return true

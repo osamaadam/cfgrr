@@ -39,7 +39,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 	ignFilePath := filepath.Join(backupDir, ignFile)
 
 	if exists := cf.CheckFileExists(ignFilePath); !exists {
-		ignorefile.InitIgnoreFile(ignFilePath, ignFilePath)
+		ignorefile.InitIgnoreFile(ignFilePath)
 	}
 
 	files, err := core.FindFiles(root, ignFilePath, backupDir, configPatterns...)

@@ -9,7 +9,7 @@ import (
 )
 
 // Creates a pair of a map, and a slice of strings from a slice of ConfigFiles.
-func promptWorkAround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr []string) {
+func promptWorkaround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr []string) {
 	m = make(map[string]*cf.ConfigFile, len(files))
 	for _, file := range files {
 		readableName := file.String()
@@ -24,7 +24,7 @@ func promptWorkAround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr 
 
 // Prompts the user to select files from a list of ConfigFiles.
 func PromptForFileSelection(files []*cf.ConfigFile) (selectedFiles []*cf.ConfigFile, err error) {
-	m, arr := promptWorkAround(files)
+	m, arr := promptWorkaround(files)
 
 	prompt := &survey.MultiSelect{
 		Message:  "Which files would you like to track? (this will overwrite existing files)",
