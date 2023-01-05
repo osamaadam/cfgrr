@@ -19,7 +19,7 @@ var (
 )
 
 var backupCmd = &cobra.Command{
-	Use:     "backup [root_dir]",
+	Use:     "backup [root_dir] [...files]",
 	Short:   "Backup the configuration files to the backup directory",
 	Aliases: []string{"b", "bkp"},
 	Args:    cobra.MinimumNArgs(1),
@@ -27,7 +27,7 @@ var backupCmd = &cobra.Command{
 		`cfgrr backup /path/to/root/config/dir`,
 		`cfgrr b ~/.bashrc`,
 		`cfgrr b ~/.bashrc ~/.zshrc`,
-		`cfgrr b ~/.config ~/.bashrc`,
+		`cfgrr b ~/.config/ ~/.bashrc`,
 		`cfgrr b ~/`,
 		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*"`,
 		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*" -d /path/to/backup/dir -i .cfgrrignore -m cfgrrmap.yaml`,

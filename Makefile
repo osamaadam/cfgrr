@@ -1,4 +1,4 @@
-.PHONY: build clean install uninstall test
+.PHONY: build clean install uninstall test cp_build
 
 NAME=cfgrr
 BUILD_VERSION=$(shell git describe --tags --always)

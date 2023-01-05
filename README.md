@@ -52,16 +52,7 @@ cfgrr r
 
 ## Current progress
 
-Currently, `cfgrr` is able to find config files matching certain patterns (currently _"\*\*/.\*"_, and _"\*\*/\*config\*"_). It is also able to restore backed up files.
-
-## Future plans
-
-If I don't actually get hired soon, I'll have to finish this project. If I do get hired, consider this my will for whoever's brave enough to carry the torch. Here's a list of things I'd like to do:
-
-- [ ] `backup` subcommand should initialize git in the backup directory.
-- [ ] Create a `git` subcommand to allow committing, and pushing changes to a remote git repository.
-- [ ] Write tests :eyes:
-- [ ] Make a proper release.
+Currently, `cfgrr` is able to find config files matching certain patterns (currently `"**/.*"`, and `"**/*config*"`). It is also able to restore backed up files.
 
 ## Usage
 
@@ -72,17 +63,21 @@ If I don't actually get hired soon, I'll have to finish this project. If I do ge
 This will backup all the config files found in the given directory.
 
 ```sh
-cfgrr backup [root_path]
+cfgrr backup [root_path] [...files]
 ```
 
 > :bell: You'll be prompted to choose the files you'd like to backup.
 
 :mag: For more info, run `cfgrr backup --help`.
 
-##### Example:
+##### Examples:
 
 ```sh
 cfgrr backup ~/.config
+```
+
+```sh
+cfgrr b ~/.bashrc ~/.zshrc
 ```
 
 This will backup all the config files found in `~/.config` matching the pattern `**/.*` or `**/*config*` (default patterns).
@@ -140,3 +135,13 @@ cfgrr unset [key]
 ```sh
 cfgrr unset backup_dir
 ```
+
+#### Setup:
+
+This is an interface to setup `cfgrr` for the first time.
+
+```sh
+cfgrr setup
+```
+
+You'll then be prompted to choose the various config values for `cfgrr`.
