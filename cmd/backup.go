@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -21,9 +22,12 @@ var backupCmd = &cobra.Command{
 	Use:     "backup [root_dir]",
 	Short:   "Backup the configuration files to the backup directory",
 	Aliases: []string{"b", "bkp"},
-	Args:    cobra.ExactArgs(1),
+	Args:    cobra.MinimumNArgs(1),
 	Example: strings.Join([]string{
 		`cfgrr backup /path/to/root/config/dir`,
+		`cfgrr b ~/.bashrc`,
+		`cfgrr b ~/.bashrc ~/.zshrc`,
+		`cfgrr b ~/.config ~/.bashrc`,
 		`cfgrr b ~/`,
 		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*"`,
 		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*" -d /path/to/backup/dir -i .cfgrrignore -m cfgrrmap.yaml`,
@@ -32,7 +36,7 @@ var backupCmd = &cobra.Command{
 }
 
 func runBackup(cmd *cobra.Command, args []string) error {
-	root := args[0]
+	paths := args
 
 	mapFile := viper.GetString("map_file")
 	ignFile := viper.GetString("ignore_file")
@@ -44,9 +48,30 @@ func runBackup(cmd *cobra.Command, args []string) error {
 		ignorefile.InitIgnoreFile(ignFilePath)
 	}
 
-	files, err := core.FindFiles(root, ignFilePath, backupDir, configPatterns...)
-	if err != nil {
-		return errors.WithStack(err)
+	files := make([]*cf.ConfigFile, 0)
+
+	for _, path := range paths {
+		stats, err := os.Stat(path)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		if stats.IsDir() {
+			fs, err := core.FindFiles(path, ignFilePath, backupDir, configPatterns...)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			files = append(files, fs...)
+		} else {
+			f, err := cf.InitFile(path)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			files = append(files, f)
+		}
+
 	}
 
 	selectedFiles, err := prompt.PromptForFileSelection(files)
