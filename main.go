@@ -9,12 +9,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Config struct {
-	BackupDir  string `mapstructure:"backup_dir"`
-	MapFile    string `mapstructure:"map_file"`
-	IgnoreFile string `mapstructure:"ignore_file"`
-}
-
 var (
 	version string
 	tagdate string

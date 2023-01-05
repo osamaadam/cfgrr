@@ -38,11 +38,11 @@ var backupCmd = &cobra.Command{
 func runBackup(cmd *cobra.Command, args []string) error {
 	paths := args
 
-	mapFile := viper.GetString("map_file")
-	ignFile := viper.GetString("ignore_file")
-	backupDir := viper.GetString("backup_dir")
+	config := &core.Config{}
 
-	ignFilePath := filepath.Join(backupDir, ignFile)
+	viper.Unmarshal(config)
+
+	ignFilePath := filepath.Join(config.BackupDir, config.IgnoreFile)
 
 	if exists := cf.CheckFileExists(ignFilePath); !exists {
 		ignorefile.InitIgnoreFile(ignFilePath)
@@ -51,13 +51,17 @@ func runBackup(cmd *cobra.Command, args []string) error {
 	files := make([]*cf.ConfigFile, 0)
 
 	for _, path := range paths {
-		stats, err := os.Stat(path)
+		stats, err := os.Lstat(path)
 		if err != nil {
 			return errors.WithStack(err)
 		}
 
+		if stats.Mode()&os.ModeSymlink == os.ModeSymlink {
+			continue
+		}
+
 		if stats.IsDir() {
-			fs, err := core.FindFiles(path, ignFilePath, backupDir, configPatterns...)
+			fs, err := core.FindFiles(path, ignFilePath, config.BackupDir, configPatterns...)
 			if err != nil {
 				return errors.WithStack(err)
 			}
@@ -79,7 +83,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 		return errors.WithStack(err)
 	}
 
-	if err := cf.CopyAndReplaceFiles(backupDir, mapFile, selectedFiles...); err != nil {
+	if err := cf.CopyAndReplaceFiles(config.BackupDir, config.MapFile, selectedFiles...); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -88,5 +92,5 @@ func runBackup(cmd *cobra.Command, args []string) error {
 
 func init() {
 	defaultPatterns := []string{`**/.*`, `**/*config*`}
-	backupCmd.Flags().StringSliceVarP(&configPatterns, "pattern", "p", defaultPatterns, "backup files matching the given pattern .")
+	backupCmd.Flags().StringSliceVarP(&configPatterns, "pattern", "p", defaultPatterns, "backup files matching the given patterns")
 }

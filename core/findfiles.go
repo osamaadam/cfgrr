@@ -29,6 +29,15 @@ func FindFiles(rootPath, ignoreFilePath, backupDir string, patterns ...string) (
 			return errors.WithStack(err)
 		}
 
+		info, err := d.Info()
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
+			return nil
+		}
+
 		if d.IsDir() {
 			// Check if the directory is ignored.
 			if len(ignoreGlobs) > 0 {
