@@ -51,29 +51,24 @@ func ReadYamlMapFile(path string) (map[string]*ConfigFile, error) {
 	return m, nil
 }
 
-// Restores files from the backup directory to their original locations.
-// This will run tidyYamlMapFile() to remove any files that are no longer present.
-func RestoreConfig(path string) error {
+// Reads the map file and returns an array of the files.
+// Calls tidyYamlMapFile to ensure the map file is up to date.
+func FindFilesToRestore(path string) ([]*ConfigFile, error) {
 	if err := tidyYamlMapFile(path); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	m, err := ReadYamlMapFile(path)
 	if err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	fileArray := make([]*ConfigFile, 0, len(m))
-
 	for _, file := range m {
 		fileArray = append(fileArray, file)
 	}
 
-	if err := RestoreSymLinks(filepath.Dir(path), fileArray...); err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
+	return fileArray, nil
 }
 
 // Writes a yaml file to the specified path.

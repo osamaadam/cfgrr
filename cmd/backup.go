@@ -78,7 +78,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 
 	}
 
-	selectedFiles, err := prompt.PromptForFileSelection(files)
+	selectedFiles, err := prompt.PromptForFileSelection(files, "Which files would you like to track? (this will overwrite existing files)")
 	if err != nil {
 		return errors.WithStack(err)
 	}

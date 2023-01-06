@@ -23,7 +23,7 @@ func promptWorkaround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr 
 }
 
 // Prompts the user to select files from a list of ConfigFiles.
-func PromptForFileSelection(files []*cf.ConfigFile) (selectedFiles []*cf.ConfigFile, err error) {
+func PromptForFileSelection(files []*cf.ConfigFile, message string) (selectedFiles []*cf.ConfigFile, err error) {
 	m, arr := promptWorkaround(files)
 
 	if len(arr) == 0 {
@@ -31,7 +31,7 @@ func PromptForFileSelection(files []*cf.ConfigFile) (selectedFiles []*cf.ConfigF
 	}
 
 	prompt := &survey.MultiSelect{
-		Message:  "Which files would you like to track? (this will overwrite existing files)",
+		Message:  message,
 		Options:  arr,
 		PageSize: 10,
 	}

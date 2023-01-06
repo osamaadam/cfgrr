@@ -1,6 +1,6 @@
 # cfgrr (Configurer)
 
-`cfgrr` is a tool to help manage the meriade of config files usually found on your Linux setup. If you're familiar with [GNU stow](https://www.gnu.org/software/stow/), you'll find `cfgrr` to be an opinionated replacement for `stow` with a much more guided setup.
+`cfgrr` is a tool to help manage the myriad of config files usually found on your Linux setup. If you're familiar with [GNU stow](https://www.gnu.org/software/stow/), you'll find `cfgrr` to be an opinionated replacement for `stow` with a much more guided setup.
 
 At the time of typing this, Jan 2023, `cfgrr` should be able to find all your config files, add them to some kind of directory structure, track them with git, and give you the option to push them to your private git remote, and resore them at will.
 
@@ -47,7 +47,7 @@ Then choose the files you'd like to backup.
 > (assuming you have the backup folder at `~/.config/cfgrr`)
 
 ```sh
-cfgrr r
+cfgrr r -a
 ```
 
 ## Current progress
@@ -100,7 +100,13 @@ cfgrr restore
 cfgrr r -d ~/cfgrr/
 ```
 
-This will restore all the backed up files from the directory `~/cfgrr` to their original locations.
+This will prompt you to choose the files you'd like to restore from the backup directory `~/cfgrr/`.
+
+If you'd like to restore all the files, you can use the `-a` flag.
+
+```sh
+cfgrr r -a
+```
 
 #### Set:
 
@@ -145,3 +151,5 @@ cfgrr setup
 ```
 
 You'll then be prompted to choose the various config values for `cfgrr`.
+
+:mag: For more info, run `cfgrr setup --help`.
