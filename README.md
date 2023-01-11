@@ -12,7 +12,7 @@ This tool was tested on Linux systems only, though it should also work with MacO
 
 ### Download the binary
 
-Download the latest binary from [here](https://github.com/osamaadam/cfgrr/releases/latest/cfgrr), and [add the file to your `$PATH`](https://linuxize.com/post/how-to-add-directory-to-path-in-linux/).
+Download the latest binary for [Linux](https://github.com/osamaadam/cfgrr/releases/latest/cfgrr_linux), [MacOS](https://github.com/osamaadam/cfgrr/releases/latest/cfgrr_macos), or [Windows](https://github.com/osamaadam/cfgrr/releases/latest/cfgrr_windows.exe), and [add the file to your `$PATH`](https://linuxize.com/post/how-to-add-directory-to-path-in-linux/).
 
 **-or-**
 
