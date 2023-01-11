@@ -53,7 +53,7 @@ func FindFiles(rootPath, ignoreFilePath, backupDir string, patterns ...string) (
 		if matches := CheckIfGlobsMatch(path, patterns...); matches {
 			// Check if file is ignored.
 			if ignored := CheckIfGlobsMatch(path, ignoreGlobs...); !ignored {
-				file, err := configfile.InitFile(path)
+				file, err := configfile.NewConfigFile(path)
 				if err != nil {
 					return errors.WithStack(err)
 				}

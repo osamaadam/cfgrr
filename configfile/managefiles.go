@@ -131,3 +131,13 @@ func EnsureDirExists(path string) error {
 
 	return nil
 }
+
+// Checks if the given path is a path to a symlink.
+func CheckIfSymlink(path string) (bool, error) {
+	fi, err := os.Lstat(path)
+	if err != nil {
+		return false, errors.WithStack(err)
+	}
+
+	return fi.Mode()&os.ModeSymlink != 0, nil
+}

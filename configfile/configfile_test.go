@@ -23,7 +23,7 @@ func TestInitFile(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			file, err := InitFile(test.in)
+			file, err := NewConfigFile(test.in)
 			if err != nil && !test.err {
 				t.Errorf("got error: %v", err)
 			}

@@ -47,6 +47,7 @@ func init() {
 	rootCmd.AddCommand(unsetCmd)
 	rootCmd.AddCommand(resetCmd)
 	rootCmd.AddCommand(setupCmd)
+	rootCmd.AddCommand(deleteCmd)
 }
 
 func initConfig() {

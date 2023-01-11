@@ -68,7 +68,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 
 			files = append(files, fs...)
 		} else {
-			f, err := cf.InitFile(path)
+			f, err := cf.NewConfigFile(path)
 			if err != nil {
 				return errors.WithStack(err)
 			}

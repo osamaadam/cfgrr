@@ -1,6 +1,7 @@
 package configfile
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -117,4 +118,64 @@ func correctYamlFileName(path string) string {
 	}
 
 	return path
+}
+
+// Removes files from the backup directory, and removes them from the map file.
+// Calls tidyYamlMapFile to ensure the map file is up to date.
+func RemoveFiles(backupDir, mapFileName string, files ...*ConfigFile) error {
+	if len(files) == 0 {
+		return nil
+	}
+
+	for _, file := range files {
+		path := filepath.Join(backupDir, file.HashShort())
+
+		if err := os.Remove(path); err != nil && !errors.Is(err, os.ErrNotExist) {
+			return errors.WithStack(err)
+		}
+
+		fmt.Println("Removed", path)
+	}
+
+	if err := tidyYamlMapFile(filepath.Join(backupDir, mapFileName)); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+// Removes files from the backup directory, and restores files to their original position if a symlink exists.
+func RemoveFilesAndRevert(backupDir, mapFileName string, force bool, files ...*ConfigFile) error {
+	if len(files) == 0 {
+		return nil
+	}
+
+	for _, file := range files {
+		orgPath := filepath.Join(backupDir, file.HashShort())
+		targPath := file.PathAbs()
+
+		if isSym, _ := CheckIfSymlink(targPath); isSym || force {
+			symlinkTarg, err := filepath.EvalSymlinks(targPath)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+			if symlinkTarg == orgPath || force {
+				// Target is a symlink to the backup file, or force is enabled.
+				if err := os.Remove(targPath); err != nil {
+					return errors.WithStack(err)
+				}
+				if err := os.Rename(orgPath, targPath); err != nil {
+					return errors.WithStack(err)
+				}
+				fmt.Println("Restored", targPath)
+			}
+		}
+	}
+
+	// Remove the files from the backup directory that couldn't be replaced.
+	if err := RemoveFiles(backupDir, mapFileName, files...); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }

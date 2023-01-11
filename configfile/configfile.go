@@ -16,10 +16,10 @@ type ConfigFile struct {
 /*
 Tidies the path before initializing the object.
 
-	cf, _ := InitFile("~/path/../path/.config")
+	cf, _ := NewConfigFile("~/path/../path/.config")
 	// cf.Path = "path/.config"
 */
-func InitFile(path string) (file *ConfigFile, err error) {
+func NewConfigFile(path string) (file *ConfigFile, err error) {
 	if path == "" {
 		return nil, errors.New("path can't be empty")
 	}

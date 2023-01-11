@@ -4,6 +4,10 @@
 
 At the time of typing this, Jan 2023, `cfgrr` should be able to find all your config files, add them to some kind of directory structure, track them with git, and give you the option to push them to your private git remote, and resore them at will.
 
+## Disclaimer
+
+This tool was tested on Linux systems only, though it should also work with MacOS. It also confusingly works on Windows too (though I don't recommend using it there).
+
 ## Installation
 
 ### Download the binary
@@ -153,3 +157,29 @@ cfgrr setup
 You'll then be prompted to choose the various config values for `cfgrr`.
 
 :mag: For more info, run `cfgrr setup --help`.
+
+#### Delete:
+
+This subcommand allows the user to delete backed up files from the backup directory.
+
+```sh
+cfgrr delete [...files]
+```
+
+If the user were to use the `--restore` flag, the symlinks created previously would be replaced by the file from the backup directory. This is a safe way of undoing your backups.
+
+```sh
+cfgrr delete --restore [...files]
+```
+
+By default, the `-r` flag only replaces the files if they are symlinks to the target. To restore the files regardless if they are symlinks or not, use the `--force` flag.
+
+```sh
+cfgrr delete --restore --force [...files]
+```
+
+or more compactly, `cfgrr d -rf [...files]`.
+
+In case no files were provided to the argument, the user will be prompted to choose the files to delete.
+
+:mag: For more info, run `cfgrr delete --help`.

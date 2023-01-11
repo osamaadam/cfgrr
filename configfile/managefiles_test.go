@@ -67,7 +67,7 @@ func TestCopyFile(t *testing.T) {
 		tempDir := t.TempDir()
 		src := filepath.Join(tempDir, "src")
 		dest := filepath.Join(tempDir, "dest")
-		srcFile, _ := InitFile(src)
+		srcFile, _ := NewConfigFile(src)
 		if err := copyFile(dest, srcFile); err == nil {
 			t.Errorf("expected error, got nil")
 		}
@@ -81,7 +81,7 @@ func TestRestoreSymLink(t *testing.T) {
 
 		expectedSrcFile := filepath.Join(homedir, ".src")
 
-		backupFile, _ := InitFile(expectedSrcFile)
+		backupFile, _ := NewConfigFile(expectedSrcFile)
 
 		backupFilePath := filepath.Join(backupDir, backupFile.HashShort())
 
@@ -110,7 +110,7 @@ func TestRestoreSymLink(t *testing.T) {
 
 func TestCopyAndReplaceFile(t *testing.T) {
 	t.Run("fails if the src file doesn't exist", func(t *testing.T) {
-		cfgFile, err := InitFile("/tmp/doesnotexist")
+		cfgFile, err := NewConfigFile("/tmp/doesnotexist")
 		if err != nil {
 			t.Errorf("got error: %v", err)
 		}
@@ -126,7 +126,7 @@ func TestCopyAndReplaceFile(t *testing.T) {
 
 		srcFile := filepath.Join(homedir, ".src")
 
-		cfgFile, err := InitFile(srcFile)
+		cfgFile, err := NewConfigFile(srcFile)
 		if err != nil {
 			t.Errorf("got error: %v", err)
 		}
