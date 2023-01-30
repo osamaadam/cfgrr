@@ -93,6 +93,10 @@ func copyFile(copyDir string, file *ConfigFile) error {
 		return errors.WithStack(err)
 	}
 
+	if err = dstFile.Chmod(file.Perm); err != nil {
+		return errors.WithStack(err)
+	}
+
 	return nil
 }
 

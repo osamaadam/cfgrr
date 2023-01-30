@@ -11,6 +11,7 @@ import (
 
 type ConfigFile struct {
 	Path string
+	Perm os.FileMode
 }
 
 /*
@@ -42,6 +43,8 @@ func NewConfigFile(path string) (file *ConfigFile, err error) {
 	file = &ConfigFile{
 		Path: relPath,
 	}
+
+	file.SavePerm()
 
 	return file, nil
 }
@@ -84,4 +87,26 @@ func (cf *ConfigFile) HashShort() string {
 // Makes it printable, functions like fmt.Println know to call this automatically.
 func (cf *ConfigFile) String() string {
 	return cf.Name() + " - " + "(" + filepath.Join("~", cf.Path) + ")"
+}
+
+// Check if the file exists.
+func (cf *ConfigFile) Exists() bool {
+	_, err := os.Stat(cf.PathAbs())
+	return !os.IsNotExist(err)
+}
+
+// Save file permissions.
+func (cf *ConfigFile) SavePerm() error {
+	info, err := os.Stat(cf.PathAbs())
+	if err != nil {
+		if os.IsNotExist(err) {
+			cf.Perm = os.FileMode(0644)
+			return nil
+		}
+		return errors.WithStack(err)
+	}
+
+	cf.Perm = info.Mode()
+
+	return nil
 }
