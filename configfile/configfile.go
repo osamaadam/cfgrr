@@ -44,7 +44,9 @@ func NewConfigFile(path string) (file *ConfigFile, err error) {
 		Path: relPath,
 	}
 
-	file.SavePerm()
+	if err := file.SavePerm(); err != nil {
+		return nil, errors.WithMessage(err, "couldn't save file permissions")
+	}
 
 	return file, nil
 }
@@ -87,12 +89,6 @@ func (cf *ConfigFile) HashShort() string {
 // Makes it printable, functions like fmt.Println know to call this automatically.
 func (cf *ConfigFile) String() string {
 	return cf.Name() + " - " + "(" + filepath.Join("~", cf.Path) + ")"
-}
-
-// Check if the file exists.
-func (cf *ConfigFile) Exists() bool {
-	_, err := os.Stat(cf.PathAbs())
-	return !os.IsNotExist(err)
 }
 
 // Save file permissions.
