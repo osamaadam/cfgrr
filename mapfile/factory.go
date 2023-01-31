@@ -2,17 +2,32 @@ package mapfile
 
 import (
 	"path/filepath"
+
+	"github.com/spf13/viper"
 )
 
-func NewMapFile(path string) IMapFile {
+// Returns a new IMapFile based on the file extension
+func NewMapFile(optPath ...string) IMapFile {
+	var path string
+	if len(optPath) == 0 {
+		path = guessMapFilePath()
+	} else {
+		path = optPath[0]
+	}
 	ext := filepath.Ext(path)
 
-	if ext == ".json" {
+	switch ext {
+	case ".json":
 		// TODO: implement JSON mapfile, maybe
-	} else {
-		// just default to YAML
+	default:
 		return NewYamlMapFile(path)
 	}
 
 	return nil
+}
+
+func guessMapFilePath() string {
+	backupDir := viper.GetString("backup_dir")
+	mapFileName := viper.GetString("map_file")
+	return filepath.Join(backupDir, mapFileName)
 }

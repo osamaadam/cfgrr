@@ -4,19 +4,18 @@ import (
 	cf "github.com/osamaadam/cfgrr/configfile"
 	"github.com/osamaadam/cfgrr/mapfile"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 )
 
 // Backs up the files to the backup directory.
 // And creates a symlink to the backup files at the original file locations.
-func BackupFiles(mapFilePath string, files ...*cf.ConfigFile) error {
+func BackupFiles(files ...*cf.ConfigFile) error {
 	for _, file := range files {
 		if err := file.Backup(); err != nil {
 			return errors.WithStack(err)
 		}
 	}
 
-	mapFile := mapfile.NewMapFile(mapFilePath)
+	mapFile := mapfile.NewMapFile()
 
 	if err := mapFile.AddFiles(files...); err != nil {
 		return errors.WithStack(err)
@@ -44,9 +43,7 @@ func DeleteFiles(restore bool, files ...*cf.ConfigFile) error {
 		}
 	}
 
-	yamlFilePath := viper.GetString("map_file")
-
-	mapFile := mapfile.NewYamlMapFile(yamlFilePath)
+	mapFile := mapfile.NewMapFile()
 
 	if err := mapFile.RemoveFiles(files...); err != nil {
 		return errors.WithStack(err)

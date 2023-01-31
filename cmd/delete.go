@@ -25,7 +25,6 @@ var deleteCmd = &cobra.Command{
 		"cfgrr delete ~/.vimrc",
 		"cfgrr delete ~/.vimrc ~/.zshrc",
 		"cfgrr delete -r ~/.vimrc",
-		"cfgrr delete -rf ~/.vimrc",
 	}, "\n"),
 }
 
@@ -72,6 +71,5 @@ func deleteRun(cmd *cobra.Command, args []string) (err error) {
 }
 
 func init() {
-	deleteCmd.Flags().BoolVarP(&force, "force", "f", false, "force replace the original files even if they're not symlinks")
 	deleteCmd.Flags().BoolVarP(&replace, "replace", "r", false, "replace the symlinks with the original target")
 }
