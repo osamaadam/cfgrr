@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
+	"github.com/osamaadam/cfgrr/core"
 	"github.com/osamaadam/cfgrr/prompt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -52,7 +53,7 @@ func restore(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	if err := cf.RestoreFiles(files...); err != nil {
+	if err := core.RestoreFiles(files...); err != nil {
 		return errors.WithStack(err)
 	}
 

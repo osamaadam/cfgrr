@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
+	"github.com/osamaadam/cfgrr/core"
 	"github.com/osamaadam/cfgrr/prompt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -57,7 +58,7 @@ func deleteRun(cmd *cobra.Command, args []string) (err error) {
 		return nil
 	}
 
-	if err := cf.DeleteFiles(replace, files...); err != nil {
+	if err := core.DeleteFiles(replace, files...); err != nil {
 		return errors.WithStack(err)
 	}
 

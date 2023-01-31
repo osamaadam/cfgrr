@@ -119,7 +119,7 @@ func (cf *ConfigFile) BackupPath() string {
 }
 
 // Creates a symlink to the backup file.
-func (cf *ConfigFile) RestoreSymlink() error {
+func (cf *ConfigFile) Restore() error {
 	if err := os.Symlink(cf.BackupPath(), cf.PathAbs()); err != nil {
 		return errors.WithMessage(err, "couldn't create a symlink to the backup file")
 	}
@@ -157,7 +157,7 @@ func (cf *ConfigFile) Backup() error {
 	}
 
 	// Create a symlink to the backup file
-	if err := cf.RestoreSymlink(); err != nil {
+	if err := cf.Restore(); err != nil {
 		return errors.WithMessage(err, "couldn't create a symlink to the backup file")
 	}
 

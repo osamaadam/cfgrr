@@ -5,52 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 )
-
-// Backs up the files to the backup directory.
-// And creates a symlink to the backup files at the original file locations.
-func BackupFiles(mapFilePath string, files ...*ConfigFile) error {
-	for _, file := range files {
-		if err := file.Backup(); err != nil {
-			return errors.WithStack(err)
-		}
-	}
-
-	if err := UpdateYamlMapFile(mapFilePath, files...); err != nil {
-		errors.WithStack(err)
-	}
-
-	return nil
-}
-
-// Restores the files from the backup directory.
-func RestoreFiles(files ...*ConfigFile) error {
-	for _, file := range files {
-		if err := file.RestoreSymlink(); err != nil {
-			return errors.WithStack(err)
-		}
-	}
-
-	return nil
-}
-
-// Deletes the files from the backup directory.
-func DeleteFiles(restore bool, files ...*ConfigFile) error {
-	for _, file := range files {
-		if err := file.DeleteBackup(restore); err != nil {
-			return errors.WithStack(err)
-		}
-	}
-
-	yamlFilePath := viper.GetString("map_file")
-
-	if err := tidyYamlMapFile(yamlFilePath); err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
-}
 
 func CheckFileExists(path string) bool {
 	_, err := os.Stat(path)
