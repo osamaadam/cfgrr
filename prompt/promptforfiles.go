@@ -23,11 +23,12 @@ func promptWorkaround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr 
 }
 
 // Prompts the user to select files from a list of ConfigFiles.
-func PromptForFileSelection(files []*cf.ConfigFile, message string) (selectedFiles []*cf.ConfigFile, err error) {
-	m, arr := promptWorkaround(files)
+func PromptForFileSelection(files *[]*cf.ConfigFile, message string) error {
+	m, arr := promptWorkaround(*files)
+	selectedFiles := make([]*cf.ConfigFile, 0, len(*files))
 
 	if len(arr) == 0 {
-		return selectedFiles, nil
+		return nil
 	}
 
 	prompt := &survey.MultiSelect{
@@ -39,12 +40,14 @@ func PromptForFileSelection(files []*cf.ConfigFile, message string) (selectedFil
 	filteredFiles := []string{}
 
 	if err := survey.AskOne(prompt, &filteredFiles, survey.WithKeepFilter(true)); err != nil {
-		return nil, errors.WithStack(err)
+		return errors.WithStack(err)
 	}
 
 	for _, file := range filteredFiles {
 		selectedFiles = append(selectedFiles, m[file])
 	}
 
-	return selectedFiles, nil
+	files = &selectedFiles
+
+	return nil
 }

@@ -49,10 +49,11 @@ func ReadYamlMapFile(path string) (map[string]*ConfigFile, error) {
 		return nil, errors.WithStack(err)
 	}
 
+	// assign default permissions if they are not set
 	for k, v := range m {
 		perm := v.Perm
 		if perm == 0 {
-			m[k].Perm = os.FileMode(0644)
+			m[k].Perm = os.FileMode(0644) // -rw-r--r--
 		}
 	}
 

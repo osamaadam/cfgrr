@@ -14,10 +14,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	configPatterns []string
-)
-
 var backupCmd = &cobra.Command{
 	Use:     "backup [root_dir] [...files]",
 	Short:   "Backup the configuration files to the backup directory",
@@ -78,12 +74,13 @@ func runBackup(cmd *cobra.Command, args []string) error {
 
 	}
 
-	selectedFiles, err := prompt.PromptForFileSelection(files, "Which files would you like to track? (this will overwrite existing files)")
-	if err != nil {
-		return errors.WithStack(err)
+	if !all {
+		if err := prompt.PromptForFileSelection(&files, "Which files would you like to track? (this will overwrite existing files)"); err != nil {
+			return errors.WithStack(err)
+		}
 	}
 
-	if err := cf.CopyAndReplaceFiles(config.BackupDir, config.MapFile, selectedFiles...); err != nil {
+	if err := cf.RestoreFiles(files...); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -93,4 +90,5 @@ func runBackup(cmd *cobra.Command, args []string) error {
 func init() {
 	defaultPatterns := []string{`**/.*`, `**/*config*`}
 	backupCmd.Flags().StringSliceVarP(&configPatterns, "pattern", "p", defaultPatterns, "backup files matching the given patterns")
+	backupCmd.Flags().BoolVarP(&all, "all", "a", false, "backup all matched files (skip prompt)")
 }

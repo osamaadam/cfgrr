@@ -1,49 +1,52 @@
 package configfile
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
-// Copies files to a directory, and updates the map file.
-func CopyFiles(copyDir, mapFile string, files ...*ConfigFile) error {
+// Backs up the files to the backup directory.
+// And creates a symlink to the backup files at the original file locations.
+func BackupFiles(mapFilePath string, files ...*ConfigFile) error {
 	for _, file := range files {
-		if err := copyFile(copyDir, file); err != nil {
+		if err := file.Backup(); err != nil {
 			return errors.WithStack(err)
 		}
 	}
 
-	if err := UpdateYamlMapFile(filepath.Join(copyDir, mapFile), files...); err != nil {
-		return errors.WithStack(err)
+	if err := UpdateYamlMapFile(mapFilePath, files...); err != nil {
+		errors.WithStack(err)
 	}
 
 	return nil
 }
 
-// Copies files to a directory, replaces the old file with a symlink, and updates the map file.
-func CopyAndReplaceFiles(copyDir, mapFile string, files ...*ConfigFile) error {
+// Restores the files from the backup directory.
+func RestoreFiles(files ...*ConfigFile) error {
 	for _, file := range files {
-		if err := copyAndReplaceFile(copyDir, file); err != nil {
+		if err := file.RestoreSymlink(); err != nil {
 			return errors.WithStack(err)
 		}
-	}
-
-	if err := UpdateYamlMapFile(filepath.Join(copyDir, mapFile), files...); err != nil {
-		return errors.WithStack(err)
 	}
 
 	return nil
 }
 
-// Ensures symlinks to the backup files are created at the original file locations.
-func RestoreSymLinks(backupDir string, files ...*ConfigFile) error {
+// Deletes the files from the backup directory.
+func DeleteFiles(restore bool, files ...*ConfigFile) error {
 	for _, file := range files {
-		if err := restoreSymLink(backupDir, file); err != nil {
+		if err := file.DeleteBackup(restore); err != nil {
 			return errors.WithStack(err)
 		}
+	}
+
+	yamlFilePath := viper.GetString("map_file")
+
+	if err := tidyYamlMapFile(yamlFilePath); err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -52,76 +55,6 @@ func RestoreSymLinks(backupDir string, files ...*ConfigFile) error {
 func CheckFileExists(path string) bool {
 	_, err := os.Stat(path)
 	return !os.IsNotExist(err)
-}
-
-// Creates a backup of the file in the backup directory, and replaces the file with a symlink.
-func copyAndReplaceFile(copyDir string, file *ConfigFile) error {
-	if err := copyFile(copyDir, file); err != nil {
-		return errors.WithStack(err)
-	}
-
-	if err := os.Remove(file.PathAbs()); err != nil {
-		return errors.WithStack(err)
-	}
-
-	if err := os.Symlink(filepath.Join(copyDir, file.HashShort()), file.PathAbs()); err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
-}
-
-// Creates a backup of the file in the backup directory.
-func copyFile(copyDir string, file *ConfigFile) error {
-	if err := EnsureDirExists(copyDir); err != nil {
-		return errors.WithStack(err)
-	}
-
-	orgFile, err := os.Open(file.PathAbs())
-	if err != nil {
-		return errors.WithStack(err)
-	}
-	defer orgFile.Close()
-
-	dstFile, err := os.Create(filepath.Join(copyDir, file.HashShort()))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-	defer dstFile.Close()
-
-	if _, err := io.Copy(dstFile, orgFile); err != nil {
-		return errors.WithStack(err)
-	}
-
-	if err = dstFile.Chmod(file.Perm); err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
-}
-
-// Creates a symlink to the file in the backup directory at the file's path (file.Path).
-func restoreSymLink(backupDir string, file *ConfigFile) error {
-	if exists := CheckFileExists(file.PathAbs()); exists {
-		if err := os.Remove(file.PathAbs()); err != nil {
-			return errors.WithStack(err)
-		}
-	}
-
-	if err := EnsureDirExists(filepath.Dir(file.PathAbs())); err != nil {
-		return errors.WithStack(err)
-	}
-
-	absTargPath, err := filepath.Abs(filepath.Join(backupDir, file.HashShort()))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	if err := os.Symlink(absTargPath, file.PathAbs()); err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
 }
 
 // Creates a directory (recursively) if it does not exist.

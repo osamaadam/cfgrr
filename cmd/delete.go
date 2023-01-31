@@ -11,11 +11,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	force   bool
-	replace bool
-)
-
 var deleteCmd = &cobra.Command{
 	Use:     "delete [...paths]",
 	Short:   "Delete the configuration files from the backup directory",
@@ -53,8 +48,7 @@ func deleteRun(cmd *cobra.Command, args []string) (err error) {
 			return errors.WithStack(err)
 		}
 
-		files, err = prompt.PromptForFileSelection(files, "Select the files to delete: ")
-		if err != nil {
+		if err := prompt.PromptForFileSelection(&files, "Select the files to delete: "); err != nil {
 			return errors.WithStack(err)
 		}
 	}
@@ -63,16 +57,8 @@ func deleteRun(cmd *cobra.Command, args []string) (err error) {
 		return nil
 	}
 
-	if replace {
-		// User wants to replace the symlinks with the original target.
-		if err := cf.RemoveFilesAndRevert(backupDir, mapFileName, force, files...); err != nil {
-			return errors.WithStack(err)
-		}
-	} else {
-		// User just wants to remove the files from the backup directory.
-		if err := cf.RemoveFiles(backupDir, mapFileName, files...); err != nil {
-			return errors.WithStack(err)
-		}
+	if err := cf.DeleteFiles(replace, files...); err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil

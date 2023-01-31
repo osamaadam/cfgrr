@@ -12,10 +12,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	all bool
-)
-
 var restoreCmd = &cobra.Command{
 	Use:     "restore",
 	Short:   "Restore the configuration files from the backup directory",
@@ -46,8 +42,7 @@ func restore(cmd *cobra.Command, args []string) error {
 	}
 
 	if !all {
-		files, err = prompt.PromptForFileSelection(files, "Select the files to restore: ")
-		if err != nil {
+		if err = prompt.PromptForFileSelection(&files, "Select the files to restore: "); err != nil {
 			return errors.WithStack(err)
 		}
 	}
@@ -57,7 +52,7 @@ func restore(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	if err := cf.RestoreSymLinks(backupDir, files...); err != nil {
+	if err := cf.RestoreFiles(files...); err != nil {
 		return errors.WithStack(err)
 	}
 

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
 type ConfigFile struct {
@@ -103,6 +104,62 @@ func (cf *ConfigFile) SavePerm() error {
 	}
 
 	cf.Perm = info.Mode()
+
+	return nil
+}
+
+// Finds the backup dir from the config.
+func (cf *ConfigFile) BackupDir() string {
+	return viper.GetString("backup_dir")
+}
+
+// Constructs the backup file path.
+func (cf *ConfigFile) BackupPath() string {
+	return filepath.Join(cf.BackupDir(), cf.HashShort())
+}
+
+// Creates a symlink to the backup file.
+func (cf *ConfigFile) RestoreSymlink() error {
+	if err := os.Symlink(cf.BackupPath(), cf.PathAbs()); err != nil {
+		return errors.WithMessage(err, "couldn't create a symlink to the backup file")
+	}
+
+	return nil
+}
+
+// Deletes the backup file.
+func (cf *ConfigFile) DeleteBackup(restore bool) error {
+	if restore {
+		if err := os.Rename(cf.BackupPath(), cf.PathAbs()); err != nil {
+			return errors.WithMessagef(err, "couldn't move backup file to the original location: %s", cf.PathAbs())
+		}
+	} else {
+		if err := os.Remove(cf.BackupPath()); err != nil {
+			return errors.WithMessagef(err, "couldn't remove backup file: %s", cf.BackupPath())
+		}
+	}
+
+	return nil
+}
+
+func (cf *ConfigFile) Backup() error {
+	// Save the file permissions
+	cf.SavePerm()
+
+	// Ensure the backup dir exists
+	if err := EnsureDirExists(cf.BackupDir()); err != nil {
+		return errors.WithMessage(err, "couldn't ensure backup dir exists")
+	}
+
+	// Move the file to the backup dir
+	if err := os.Rename(cf.PathAbs(), cf.BackupPath()); err != nil {
+		return errors.WithMessage(err, "couldn't move file to backup dir")
+	}
+
+	// Create a symlink to the backup file
+	if err := cf.RestoreSymlink(); err != nil {
+		return errors.WithMessage(err, "couldn't create a symlink to the backup file")
+	}
 
 	return nil
 }
