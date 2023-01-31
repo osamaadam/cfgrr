@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
@@ -147,7 +148,7 @@ func (cf *ConfigFile) Backup() error {
 	cf.SavePerm()
 
 	// Ensure the backup dir exists
-	if err := EnsureDirExists(cf.BackupDir()); err != nil {
+	if err := helpers.EnsureDirExists(cf.BackupDir()); err != nil {
 		return errors.WithMessage(err, "couldn't ensure backup dir exists")
 	}
 

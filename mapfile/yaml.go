@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
+	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
 
@@ -37,7 +37,7 @@ func (yf *YamlMapFile) write(m map[string]*cf.ConfigFile) error {
 		return errors.WithStack(err)
 	}
 
-	if err := cf.EnsureDirExists(filepath.Dir(yf.path)); err != nil {
+	if err := helpers.EnsureDirExists(filepath.Dir(yf.path)); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -46,6 +46,11 @@ func (yf *YamlMapFile) write(m map[string]*cf.ConfigFile) error {
 	}
 
 	return nil
+}
+
+// Get the backupDir.
+func (yf *YamlMapFile) backupDir() string {
+	return filepath.Dir(yf.path)
 }
 
 // Print in string format.
@@ -113,11 +118,8 @@ func (yf *YamlMapFile) Tidy() error {
 		return errors.WithStack(err)
 	}
 
-	backupDir := viper.GetString("backup_dir")
-
 	for _, file := range m {
-		filePath := filepath.Join(backupDir, file.HashShort())
-		if !cf.CheckFileExists(filePath) {
+		if !helpers.CheckFileExists(file.BackupPath()) {
 			delete(m, file.HashShort())
 		}
 	}

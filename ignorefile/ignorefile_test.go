@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/osamaadam/cfgrr/core"
+	"github.com/osamaadam/cfgrr/helpers"
 )
 
 func TestInitIgnoreFile(t *testing.T) {
@@ -24,7 +24,7 @@ func TestInitIgnoreFile(t *testing.T) {
 			t.Errorf("expected nil, got %v", err)
 		}
 
-		lines, err := core.ReadFileLines(ignoreFilePath)
+		lines, err := helpers.ReadFileLines(ignoreFilePath)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
@@ -50,7 +50,7 @@ func TestInitIgnoreFile(t *testing.T) {
 			t.Errorf("expected nil, got %v", err)
 		}
 
-		lines, err := core.ReadFileLines(ignoreFilePath)
+		lines, err := helpers.ReadFileLines(ignoreFilePath)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}

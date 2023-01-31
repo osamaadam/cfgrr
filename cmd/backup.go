@@ -7,6 +7,7 @@ import (
 
 	cf "github.com/osamaadam/cfgrr/configfile"
 	"github.com/osamaadam/cfgrr/core"
+	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/osamaadam/cfgrr/ignorefile"
 	"github.com/osamaadam/cfgrr/prompt"
 	"github.com/pkg/errors"
@@ -40,7 +41,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 
 	ignFilePath := filepath.Join(config.BackupDir, config.IgnoreFile)
 
-	if exists := cf.CheckFileExists(ignFilePath); !exists {
+	if exists := helpers.CheckFileExists(ignFilePath); !exists {
 		ignorefile.InitIgnoreFile(ignFilePath)
 	}
 

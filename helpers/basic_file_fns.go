@@ -1,4 +1,4 @@
-package configfile
+package helpers
 
 import (
 	"os"

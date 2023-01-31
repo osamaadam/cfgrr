@@ -7,6 +7,7 @@ import (
 
 	"github.com/mattn/go-zglob"
 	"github.com/osamaadam/cfgrr/configfile"
+	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/pkg/errors"
 )
 
@@ -16,7 +17,7 @@ func FindFiles(rootPath, ignoreFilePath, backupDir string, patterns ...string) (
 		return nil, errors.New("no patterns given")
 	}
 
-	ignoreGlobs, err := ReadFileLines(ignoreFilePath)
+	ignoreGlobs, err := helpers.ReadFileLines(ignoreFilePath)
 
 	if err != nil && !os.IsNotExist(err) {
 		return nil, err

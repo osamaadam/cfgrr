@@ -5,8 +5,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	cf "github.com/osamaadam/cfgrr/configfile"
 	"github.com/osamaadam/cfgrr/core"
+	"github.com/osamaadam/cfgrr/helpers"
+	"github.com/osamaadam/cfgrr/mapfile"
 	"github.com/osamaadam/cfgrr/prompt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -30,17 +31,21 @@ var restoreCmd = &cobra.Command{
 func restore(cmd *cobra.Command, args []string) error {
 	backupDir := viper.GetString("backup_dir")
 
-	if exists := cf.CheckFileExists(backupDir); !exists {
+	if exists := helpers.CheckFileExists(backupDir); !exists {
 		return errors.New("the directory doesn't exist")
 	}
 
-	mapFile := viper.GetString("map_file")
-	mapFilePath := filepath.Join(backupDir, mapFile)
+	mapFileName := viper.GetString("map_file")
+	mapFilePath := filepath.Join(backupDir, mapFileName)
 
-	files, err := cf.FindFilesToRestore(mapFilePath)
+	mapFile := mapfile.NewMapFile(mapFilePath)
+
+	m, err := mapFile.Parse()
 	if err != nil {
 		return errors.WithStack(err)
 	}
+
+	files := helpers.GetMapValues(m)
 
 	if !all {
 		if err = prompt.PromptForFileSelection(&files, "Select the files to restore: "); err != nil {

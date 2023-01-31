@@ -6,6 +6,8 @@ import (
 
 	cf "github.com/osamaadam/cfgrr/configfile"
 	"github.com/osamaadam/cfgrr/core"
+	"github.com/osamaadam/cfgrr/helpers"
+	"github.com/osamaadam/cfgrr/mapfile"
 	"github.com/osamaadam/cfgrr/prompt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -40,14 +42,18 @@ func deleteRun(cmd *cobra.Command, args []string) (err error) {
 
 	backupDir := viper.GetString("backup_dir")
 	mapFileName := viper.GetString("map_file")
+	mapFilePath := filepath.Join(backupDir, mapFileName)
 
 	if len(files) == 0 {
 		// User didn't specify any files, so we'll prompt them to select some
 		// from the map file.
-		files, err = cf.FindFilesToRestore(filepath.Join(backupDir, mapFileName))
+		mapFile := mapfile.NewMapFile(mapFilePath)
+		m, err := mapFile.Parse()
 		if err != nil {
 			return errors.WithStack(err)
 		}
+
+		files := helpers.GetMapValues(m)
 
 		if err := prompt.PromptForFileSelection(&files, "Select the files to delete: "); err != nil {
 			return errors.WithStack(err)
