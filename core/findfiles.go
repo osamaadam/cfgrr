@@ -7,23 +7,25 @@ import (
 
 	"github.com/mattn/go-zglob"
 	"github.com/osamaadam/cfgrr/configfile"
-	"github.com/osamaadam/cfgrr/helpers"
+	"github.com/osamaadam/cfgrr/ignorefile"
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 )
 
 // FindFiles finds files in the given rootPath that match the given patterns.
-func FindFiles(rootPath, ignoreFilePath, backupDir string, patterns ...string) (files []*configfile.ConfigFile, err error) {
+func FindFiles(rootPath string, igContainer ignorefile.IIgnoresContainer, patterns ...string) (files []*configfile.ConfigFile, err error) {
 	if len(patterns) == 0 {
 		return nil, errors.New("no patterns given")
 	}
 
-	ignoreGlobs, err := helpers.ReadFileLines(ignoreFilePath)
+	c := vconfig.GetConfig()
 
+	ignoreGlobs, err := igContainer.Read()
 	if err != nil && !os.IsNotExist(err) {
 		return nil, err
 	}
 
-	ignoreGlobs = append(ignoreGlobs, backupDir)
+	ignoreGlobs = append(ignoreGlobs, c.BackupDir)
 
 	err = filepath.WalkDir(rootPath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {

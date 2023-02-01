@@ -23,6 +23,7 @@ func promptWorkaround(files []*cf.ConfigFile) (m map[string]*cf.ConfigFile, arr 
 }
 
 // Prompts the user to select files from a list of ConfigFiles.
+// THE FILES ARRAY IS OVERWRITTEN
 func PromptForFileSelection(files *[]*cf.ConfigFile, message string) error {
 	m, arr := promptWorkaround(*files)
 	selectedFiles := make([]*cf.ConfigFile, 0, len(*files))

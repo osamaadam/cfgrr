@@ -1,64 +1,83 @@
 package ignorefile
 
 import (
-	"io/ioutil"
-	"path/filepath"
-	"strings"
+	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/osamaadam/cfgrr/helpers"
+	"github.com/osamaadam/cfgrr/vconfig"
 )
 
-func TestInitIgnoreFile(t *testing.T) {
-	t.Run("empty path", func(t *testing.T) {
-		if err := InitIgnoreFile(""); err == nil {
-			t.Error("expected error, got nil")
-		}
-	})
+func TestInitDefaultIgnoreFile(t *testing.T) {
+	t.Run("creates the file properly", func(t *testing.T) {
+		c := vconfig.GetConfig()
+		c.SetBackupDir(t.TempDir())
+		c.SetIgnoreFile(".cfgrrignore")
 
-	t.Run("non-empty path", func(t *testing.T) {
-		tempDir := t.TempDir()
-		ignoreFilePath := filepath.Join(tempDir, ".cfgrrignore")
-
-		if err := InitIgnoreFile(ignoreFilePath); err != nil {
-			t.Errorf("expected nil, got %v", err)
-		}
-
-		lines, err := helpers.ReadFileLines(ignoreFilePath)
+		ignFile, err := InitDefaultIgnoreFile()
 		if err != nil {
-			t.Errorf("expected nil, got %v", err)
+			t.Fatalf("expected nil, got %v", err)
 		}
 
-		for i, line := range lines {
-			if line != defaultIgnores[i] {
-				t.Errorf("expected %v, got %v", defaultIgnores[i], line)
-			}
-		}
-	})
-
-	t.Run("non-empty path, file exists", func(t *testing.T) {
-		tempDir := t.TempDir()
-		ignoreFilePath := filepath.Join(tempDir, ".cfgrrignore")
-
-		ignoredFiles := []string{"test", "hi", "yo"}
-
-		if err := ioutil.WriteFile(ignoreFilePath, []byte(strings.Join(ignoredFiles, "\n")), 0644); err != nil {
-			t.Errorf("expected nil, got %v", err)
+		if !helpers.CheckFileExists(ignFile.Path()) {
+			t.Fatalf("expected %s to exist", ignFile.Path())
 		}
 
-		if err := InitIgnoreFile(ignoreFilePath); err != nil {
-			t.Errorf("expected nil, got %v", err)
-		}
-
-		lines, err := helpers.ReadFileLines(ignoreFilePath)
+		lines, err := ignFile.Read()
 		if err != nil {
-			t.Errorf("expected nil, got %v", err)
+			t.Fatalf("expected nil, got %v", err)
 		}
 
-		for i, line := range lines {
-			if line != ignoredFiles[i] {
-				t.Errorf("expected %v, got %v", defaultIgnores[i], line)
-			}
+		if !reflect.DeepEqual(lines, defaultIgnores) {
+			t.Fatalf("expected %v, got %v", defaultIgnores, lines)
 		}
 	})
+}
+
+// Implicitely tests Read, Write and Append.
+func TestIgnoreFile(t *testing.T) {
+	tests := []struct {
+		name     string
+		in       []string
+		existing []string
+		out      []string
+		wantErr  bool
+	}{
+		{"no lines, no existing", []string{}, []string{}, []string{}, false},
+		{"no lines, multiple existing", []string{}, []string{"hi", "yo", "bye"}, []string{"hi", "yo", "bye"}, false},
+		{"multiple lines, no existing", []string{"hi", "yo", "bye"}, []string{}, []string{"hi", "yo", "bye"}, false},
+		{"multiple lines, multiple existing", []string{"hi", "yo", "bye"}, []string{"hi2", "yo2", "bye2"}, []string{"hi2", "yo2", "bye2", "hi", "yo", "bye"}, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := vconfig.GetConfig()
+			c.SetBackupDir(t.TempDir())
+			c.SetIgnoreFile(".cfgrrignore")
+			i := NewIgnoreFile(c.GetIgnoreFilePath())
+
+			if err := i.Write(tt.existing...); err != nil {
+				t.Errorf("expected nil, got %v", err)
+			}
+			if err := i.Write(tt.in...); err != nil {
+				t.Errorf("expected nil, got %v", err)
+			}
+
+			lines, err := i.Read()
+			if err != nil && !tt.wantErr {
+				t.Errorf("expected nil, got %v", err)
+			}
+
+			sort.Strings(lines)
+			sort.Strings(tt.out)
+
+			if !reflect.DeepEqual(lines, tt.out) {
+				// Apparently, [] != [] is true in Go, it's like Javascript all over again.
+				if len(lines) != 0 || len(tt.out) != 0 {
+					t.Errorf("expected %v, got %v", tt.out, lines)
+				}
+			}
+		})
+	}
 }

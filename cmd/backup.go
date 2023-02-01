@@ -6,10 +6,8 @@ import (
 
 	cf "github.com/osamaadam/cfgrr/configfile"
 	"github.com/osamaadam/cfgrr/core"
-	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/osamaadam/cfgrr/ignorefile"
 	"github.com/osamaadam/cfgrr/prompt"
-	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -34,11 +32,12 @@ var backupCmd = &cobra.Command{
 func runBackup(cmd *cobra.Command, args []string) error {
 	paths := args
 
-	config := vconfig.GetConfig()
-
-	if exists := helpers.CheckFileExists(config.GetIgnoreFilePath()); !exists {
-		ignorefile.InitIgnoreFile(config.GetIgnoreFilePath())
+	if _, err := ignorefile.InitDefaultIgnoreFile(); err != nil {
+		return errors.WithStack(err)
 	}
+	// Includes the default ignore file by default
+	ignFiles, _ := cmd.Flags().GetStringSlice("ignore_files")
+	ignContainer := ignorefile.NewIgnoresContainer(ignFiles...)
 
 	files := make([]*cf.ConfigFile, 0)
 
@@ -53,7 +52,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 		}
 
 		if stats.IsDir() {
-			fs, err := core.FindFiles(path, config.GetIgnoreFilePath(), config.BackupDir, configPatterns...)
+			fs, err := core.FindFiles(path, ignContainer, configPatterns...)
 			if err != nil {
 				return errors.WithStack(err)
 			}

@@ -36,7 +36,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", filepath.Join(homedir, ".cfgrr.yaml"), "config file")
 	rootCmd.PersistentFlags().StringP("backup_dir", "d", "", "backup directory (default $HOME/.config/cfgrr)")
-	rootCmd.PersistentFlags().StringP("ignore_file", "i", "", "ignore file (default .cfgrrignore)")
+	rootCmd.PersistentFlags().StringSliceP("ignore_files", "i", []string{".cfgrrignore", ".gitignore"}, "ignore file")
 	rootCmd.PersistentFlags().StringP("map_file", "m", "", "map file (default cfgrrmap.yaml)")
 
 	viper.BindPFlag("backup_dir", rootCmd.PersistentFlags().Lookup("backup_dir"))

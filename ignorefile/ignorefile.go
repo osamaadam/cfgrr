@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/osamaadam/cfgrr/helpers"
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 )
 
@@ -14,7 +16,9 @@ import (
 
 type IIgnoreFile interface {
 	fmt.Stringer
+	Write(...string) error
 	Read() ([]string, error)
+	Path() string
 }
 
 type IgnoreFile struct {
@@ -33,30 +37,59 @@ func (i *IgnoreFile) String() string {
 	return string(r)
 }
 
+func (i *IgnoreFile) Write(lines ...string) error {
+	readLines, err := i.Read()
+	if err != nil && os.IsNotExist(err) {
+		return errors.WithStack(err)
+	}
+
+	lines = append(lines, readLines...)
+	sort.Strings(lines)
+
+	if err := helpers.EnsureDirExists(filepath.Dir(i.path)); err != nil {
+		return errors.WithStack(err)
+	}
+
+	file, err := os.OpenFile(i.Path(), os.O_RDWR|os.O_CREATE, os.FileMode(0644))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer file.Close()
+
+	if _, err := file.Write([]byte(strings.Join(lines, "\n"))); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
 func (i *IgnoreFile) Read() ([]string, error) {
 	lines, err := helpers.ReadFileLines(i.path)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return []string{}, errors.WithStack(err)
 	}
 
 	return lines, nil
 }
 
-func InitIgnoreFile(path string) error {
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		if err := helpers.EnsureDirExists(filepath.Dir(path)); err != nil {
-			return errors.WithStack(err)
-		}
-		file, err := os.Create(path)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
+func (i *IgnoreFile) Path() string {
+	return i.path
+}
 
-		if _, err := file.Write([]byte(strings.Join(defaultIgnores, "\n"))); err != nil {
-			return errors.WithStack(err)
+func InitDefaultIgnoreFile() (IIgnoreFile, error) {
+	c := vconfig.GetConfig()
+	ign := NewIgnoreFile(c.GetIgnoreFilePath())
+
+	lines, err := ign.Read()
+	if err != nil && os.IsNotExist(err) {
+		return nil, errors.WithStack(err)
+	}
+
+	if len(lines) == 0 {
+		if err := ign.Write(defaultIgnores...); err != nil {
+			return nil, errors.WithStack(err)
 		}
 	}
 
-	return nil
+	return ign, nil
 }
