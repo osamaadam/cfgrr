@@ -2,6 +2,7 @@ package mapfile
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -18,11 +19,19 @@ type YamlMapFile struct {
 func NewYamlMapFile(path string) *YamlMapFile {
 	path = filepath.Clean(path)
 
-	if filepath.Ext(path) != ".yaml" && filepath.Ext(path) != ".yml" {
-		path = filepath.Join(filepath.Dir(path), filepath.Base(path)+".yaml")
+	ext := filepath.Ext(path)
+	base := filepath.Base(path)
+	okayExts := []string{".yaml", ".yml"}
+
+	if !helpers.Contains(okayExts, ext) {
+		path = filepath.Join(filepath.Dir(path), base+".yaml")
 	}
 
 	return &YamlMapFile{path: path}
+}
+
+func (yf *YamlMapFile) Path() string {
+	return yf.path
 }
 
 // Opens the map file.
@@ -69,6 +78,9 @@ func (yf *YamlMapFile) Parse() (mf map[string]*cf.ConfigFile, err error) {
 	defer file.Close()
 
 	if err := yaml.NewDecoder(file).Decode(&mf); err != nil {
+		if errors.Is(err, io.EOF) {
+			return map[string]*cf.ConfigFile{}, nil
+		}
 		return nil, errors.WithStack(err)
 	}
 

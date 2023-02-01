@@ -10,6 +10,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// TODO: Flesh out the ignore file component of the app.
+
 type IIgnoreFile interface {
 	fmt.Stringer
 	Read() ([]string, error)
@@ -19,7 +21,7 @@ type IgnoreFile struct {
 	path string
 }
 
-func NewIgnoreFile(path string) *IgnoreFile {
+func NewIgnoreFile(path string) IIgnoreFile {
 	return &IgnoreFile{path: path}
 }
 
