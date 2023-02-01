@@ -8,7 +8,7 @@ import (
 
 	cf "github.com/osamaadam/cfgrr/configfile"
 	"github.com/osamaadam/cfgrr/helpers"
-	"github.com/spf13/viper"
+	"github.com/osamaadam/cfgrr/vconfig"
 )
 
 func TestNewYamlFile(t *testing.T) {
@@ -175,7 +175,8 @@ func TestYamlMapFile_Tidy(t *testing.T) {
 			yf := _createYamlFileWithExistingFiles(temp, tt.existing)
 			existing, _ := yf.Parse()
 			expected := existing
-			viper.Set("backup_dir", temp)
+			c := vconfig.GetConfig()
+			c.SetBackupDir(temp)
 			i := 0
 			for k, v := range expected {
 				if i < tt.remove {

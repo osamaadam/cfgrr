@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Checks if a file exists.
 func CheckFileExists(path string) bool {
 	_, err := os.Stat(path)
 	return !os.IsNotExist(err)

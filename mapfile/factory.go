@@ -3,14 +3,15 @@ package mapfile
 import (
 	"path/filepath"
 
-	"github.com/spf13/viper"
+	"github.com/osamaadam/cfgrr/vconfig"
 )
 
 // Returns a new IMapFile based on the file extension
 func NewMapFile(optPath ...string) IMapFile {
 	var path string
 	if len(optPath) == 0 {
-		path = guessMapFilePath()
+		config := vconfig.GetConfig()
+		path = config.GetMapFilePath()
 	} else {
 		path = optPath[0]
 	}
@@ -24,10 +25,4 @@ func NewMapFile(optPath ...string) IMapFile {
 	}
 
 	return nil
-}
-
-func guessMapFilePath() string {
-	backupDir := viper.GetString("backup_dir")
-	mapFileName := viper.GetString("map_file")
-	return filepath.Join(backupDir, mapFileName)
 }

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"os"
-	"path/filepath"
 	"strings"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
@@ -10,9 +9,9 @@ import (
 	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/osamaadam/cfgrr/ignorefile"
 	"github.com/osamaadam/cfgrr/prompt"
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var backupCmd = &cobra.Command{
@@ -35,14 +34,10 @@ var backupCmd = &cobra.Command{
 func runBackup(cmd *cobra.Command, args []string) error {
 	paths := args
 
-	config := &core.Config{}
+	config := vconfig.GetConfig()
 
-	viper.Unmarshal(config)
-
-	ignFilePath := filepath.Join(config.BackupDir, config.IgnoreFile)
-
-	if exists := helpers.CheckFileExists(ignFilePath); !exists {
-		ignorefile.InitIgnoreFile(ignFilePath)
+	if exists := helpers.CheckFileExists(config.GetIgnoreFilePath()); !exists {
+		ignorefile.InitIgnoreFile(config.GetIgnoreFilePath())
 	}
 
 	files := make([]*cf.ConfigFile, 0)
@@ -58,7 +53,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 		}
 
 		if stats.IsDir() {
-			fs, err := core.FindFiles(path, ignFilePath, config.BackupDir, configPatterns...)
+			fs, err := core.FindFiles(path, config.GetIgnoreFilePath(), config.BackupDir, configPatterns...)
 			if err != nil {
 				return errors.WithStack(err)
 			}

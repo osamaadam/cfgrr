@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"path/filepath"
 	"strings"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
@@ -9,9 +8,9 @@ import (
 	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/osamaadam/cfgrr/mapfile"
 	"github.com/osamaadam/cfgrr/prompt"
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var deleteCmd = &cobra.Command{
@@ -39,14 +38,12 @@ func deleteRun(cmd *cobra.Command, args []string) (err error) {
 		files = append(files, file)
 	}
 
-	backupDir := viper.GetString("backup_dir")
-	mapFileName := viper.GetString("map_file")
-	mapFilePath := filepath.Join(backupDir, mapFileName)
+	config := vconfig.GetConfig()
 
 	if len(files) == 0 {
 		// User didn't specify any files, so we'll prompt them to select some
 		// from the map file.
-		mapFile := mapfile.NewMapFile(mapFilePath)
+		mapFile := mapfile.NewMapFile(config.GetMapFilePath())
 		m, err := mapFile.Parse()
 		if err != nil {
 			return errors.WithStack(err)

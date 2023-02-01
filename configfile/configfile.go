@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/osamaadam/cfgrr/helpers"
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 )
 
 type ConfigFile struct {
@@ -111,7 +111,8 @@ func (cf *ConfigFile) SavePerm() error {
 
 // Finds the backup dir from the config.
 func (cf *ConfigFile) BackupDir() string {
-	return viper.GetString("backup_dir")
+	config := vconfig.GetConfig()
+	return config.BackupDir
 }
 
 // Constructs the backup file path.

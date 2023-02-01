@@ -3,9 +3,9 @@ package cmd
 import (
 	"strings"
 
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var setCmd = &cobra.Command{
@@ -23,11 +23,11 @@ var setCmd = &cobra.Command{
 
 func runSet(cmd *cobra.Command, args []string) error {
 	key := args[0]
-	val := args[1]
+	vals := args[1:]
 
-	viper.Set(key, val)
+	config := vconfig.GetConfig()
 
-	if err := viper.WriteConfig(); err != nil {
+	if err := config.Set(key, vals...); err != nil {
 		return errors.WithStack(err)
 	}
 

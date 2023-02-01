@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/spf13/viper"
+	"github.com/osamaadam/cfgrr/vconfig"
 )
 
 func TestNewMapFile(t *testing.T) {
@@ -23,7 +23,8 @@ func TestNewMapFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			viper.Set("backup_dir", t.TempDir())
+			c := vconfig.GetConfig()
+			c.SetBackupDir(t.TempDir())
 			mf := NewMapFile(tt.in)
 			if mf == nil && !tt.expectNil {
 				t.Errorf("expected non-nil mapfile, got nil")

@@ -2,10 +2,9 @@ package cmd
 
 import (
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/osamaadam/cfgrr/core"
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var setupCmd = &cobra.Command{
@@ -16,11 +15,7 @@ var setupCmd = &cobra.Command{
 }
 
 func runSetup(cmd *cobra.Command, args []string) error {
-	config := &core.Config{}
-
-	if err := viper.Unmarshal(config); err != nil {
-		return err
-	}
+	config := vconfig.GetConfig()
 
 	questions := []*survey.Question{
 		{
@@ -50,11 +45,7 @@ func runSetup(cmd *cobra.Command, args []string) error {
 		return errors.WithStack(err)
 	}
 
-	viper.Set("backup_dir", config.BackupDir)
-	viper.Set("map_file", config.MapFile)
-	viper.Set("ignore_file", config.IgnoreFile)
-
-	if err := viper.WriteConfig(); err != nil {
+	if err := config.Save(); err != nil {
 		return errors.WithStack(err)
 	}
 

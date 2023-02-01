@@ -2,16 +2,15 @@ package cmd
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	"github.com/osamaadam/cfgrr/core"
 	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/osamaadam/cfgrr/mapfile"
 	"github.com/osamaadam/cfgrr/prompt"
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var restoreCmd = &cobra.Command{
@@ -29,16 +28,14 @@ var restoreCmd = &cobra.Command{
 }
 
 func restore(cmd *cobra.Command, args []string) error {
-	backupDir := viper.GetString("backup_dir")
+	config := vconfig.GetConfig()
+	backupDir := config.BackupDir
 
 	if exists := helpers.CheckFileExists(backupDir); !exists {
 		return errors.New("the directory doesn't exist")
 	}
 
-	mapFileName := viper.GetString("map_file")
-	mapFilePath := filepath.Join(backupDir, mapFileName)
-
-	mapFile := mapfile.NewMapFile(mapFilePath)
+	mapFile := mapfile.NewMapFile(config.GetMapFilePath())
 
 	m, err := mapFile.Parse()
 	if err != nil {
