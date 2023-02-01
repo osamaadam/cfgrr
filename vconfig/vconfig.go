@@ -2,6 +2,7 @@
 package vconfig
 
 import (
+	"os"
 	"path/filepath"
 
 	"github.com/pkg/errors"
@@ -89,6 +90,43 @@ func (c *Config) Save() error {
 	c.setAll()
 	if err := viper.WriteConfig(); err != nil {
 		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+// Initializes the config.
+// This should be called on the startup of the app.
+func (c *Config) Init() error {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	viper.AddConfigPath(homedir)
+	viper.SetConfigType("yaml")
+	viper.SetConfigName(".cfgrr")
+
+	userConfig, _ := os.UserConfigDir()
+	if userConfig == "" {
+		userConfig = filepath.Join(homedir, ".config")
+	}
+
+	defaultConfigDir := filepath.Join(userConfig, "cfgrr")
+
+	c.SetBackupDir(defaultConfigDir)
+	c.SetMapFile("cfgrrmap.yaml")
+	c.SetIgnoreFile(".cfgrrignore")
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// Config file not found; creating it.
+			if err := viper.SafeWriteConfig(); err != nil {
+				return errors.WithStack(err)
+			}
+		} else {
+			// Config file was found but another error was produced
+			return errors.WithStack(err)
+		}
 	}
 
 	return nil

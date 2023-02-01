@@ -4,9 +4,12 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/osamaadam/cfgrr/helpers"
+	"github.com/osamaadam/cfgrr/vconfig"
 )
 
-func TestInitFile(t *testing.T) {
+func TestNewConfigFile(t *testing.T) {
 	t.Setenv("HOME", "/home/user")
 	homedir, _ := os.UserHomeDir()
 
@@ -34,4 +37,54 @@ func TestInitFile(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestConfigFile_Backup(t *testing.T) {
+	t.Run("actually backs up", func(t *testing.T) {
+		files := _setupBackupEnv(t.TempDir(), t.TempDir(), 1)
+		if err := files[0].Backup(); err != nil {
+			t.Errorf("expected no error, got %s", err)
+		}
+		if !helpers.CheckFileExists(files[0].BackupPath()) {
+			t.Errorf("expected backup file to exist at %s, but it doesn't", files[0].BackupPath())
+		}
+	})
+}
+
+func TestConfigFile_Restore(t *testing.T) {
+	t.Run("actually restores", func(t *testing.T) {
+		files := _setupRestoreEnv(t.TempDir(), t.TempDir(), 1)
+		file := files[0]
+		if err := file.Restore(); err != nil {
+			t.Errorf("expected no error, got %s", err)
+		}
+		if !helpers.CheckFileExists(file.PathAbs()) {
+			t.Errorf("expected restored file to exist at %s, but it doesn't", file.PathAbs())
+		}
+		if ok, _ := helpers.CheckIfSymlink(file.PathAbs()); !ok {
+			t.Errorf("expected restored file to be a symlink, but it isn't")
+		}
+	})
+}
+
+func _setupBackupEnv(backupDir, dir string, num int) []*ConfigFile {
+	c := vconfig.GetConfig()
+	c.SetBackupDir(backupDir)
+	cfs := make([]*ConfigFile, num)
+	for i := 0; i < num; i++ {
+		f, _ := os.CreateTemp(dir, "")
+		f.Close()
+		cfs[i], _ = NewConfigFile(f.Name())
+	}
+
+	return cfs
+}
+
+func _setupRestoreEnv(backupDir, dir string, num int) []*ConfigFile {
+	files := _setupBackupEnv(backupDir, dir, num)
+	for _, f := range files {
+		f.Backup()
+		os.Remove(f.PathAbs())
+	}
+	return files
 }

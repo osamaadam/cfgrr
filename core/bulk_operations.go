@@ -25,7 +25,12 @@ func BackupFiles(files ...*cf.ConfigFile) error {
 }
 
 // Restores the files from the backup directory.
+// Tidies the mapfile before execution.
 func RestoreFiles(files ...*cf.ConfigFile) error {
+	mf := mapfile.NewMapFile()
+	if err := mf.Tidy(); err != nil {
+		return errors.WithStack(err)
+	}
 	for _, file := range files {
 		if err := file.Restore(); err != nil {
 			return errors.WithStack(err)

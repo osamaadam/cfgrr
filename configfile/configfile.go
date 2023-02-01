@@ -122,6 +122,11 @@ func (cf *ConfigFile) BackupPath() string {
 
 // Creates a symlink to the backup file.
 func (cf *ConfigFile) Restore() error {
+	if helpers.CheckFileExists(cf.PathAbs()) {
+		if err := os.Remove(cf.PathAbs()); err != nil {
+			return errors.WithMessagef(err, "couldn't remove the original file: %s", cf.PathAbs())
+		}
+	}
 	if err := os.Symlink(cf.BackupPath(), cf.PathAbs()); err != nil {
 		return errors.WithMessage(err, "couldn't create a symlink to the backup file")
 	}

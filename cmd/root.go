@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -54,23 +55,7 @@ func initConfig() {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
-		homedir, err := os.UserHomeDir()
-		if err != nil {
-			panic(err)
-		}
-		viper.AddConfigPath(homedir)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".cfgrr")
-	}
-
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// Config file not found; creating it.
-			if err := viper.SafeWriteConfig(); err != nil {
-				panic(err)
-			}
-		} else {
-			// Config file was found but another error was produced
+		if err := vconfig.GetConfig().Init(); err != nil {
 			panic(err)
 		}
 	}
