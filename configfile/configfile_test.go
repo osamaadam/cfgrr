@@ -67,6 +67,62 @@ func TestConfigFile_Restore(t *testing.T) {
 	})
 }
 
+func TestConfigFile_DeleteBackup(t *testing.T) {
+	tests := []struct {
+		name    string
+		restore bool
+		wantErr bool
+	}{
+		{"backup, no restore", false, false},
+		{"backup, restore", true, false},
+	}
+
+	// symlink to file doesn't exist beforehand.
+	for _, tt := range tests {
+		t.Run("CLEAN: "+tt.name, func(t *testing.T) {
+			files := _setupRestoreEnv(t.TempDir(), t.TempDir(), 1)
+			file := files[0]
+			if err := file.DeleteBackup(tt.restore); (err != nil) != tt.wantErr {
+				t.Errorf("ConfigFile.DeleteBackup() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if helpers.CheckFileExists(file.BackupPath()) {
+				t.Errorf("expected backup file to not exist at %s, but it does", file.BackupPath())
+			}
+			if tt.restore {
+				if !helpers.CheckFileExists(file.PathAbs()) {
+					t.Errorf("expected restored file to exist at %s, but it doesn't", file.PathAbs())
+				}
+				if ok, _ := helpers.CheckIfSymlink(file.PathAbs()); ok {
+					t.Errorf("expected restored file to not be a symlink, but it is")
+				}
+			}
+		})
+	}
+
+	// Symlink to file exists beforehand.
+	for _, tt := range tests {
+		t.Run("DIRTY: "+tt.name, func(t *testing.T) {
+			files := _setupBackupEnv(t.TempDir(), t.TempDir(), 1)
+			file := files[0]
+			file.Backup()
+			if err := file.DeleteBackup(tt.restore); (err != nil) != tt.wantErr {
+				t.Errorf("ConfigFile.DeleteBackup() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if helpers.CheckFileExists(file.BackupPath()) {
+				t.Errorf("expected backup file to not exist at %s, but it does", file.BackupPath())
+			}
+			if tt.restore {
+				if !helpers.CheckFileExists(file.PathAbs()) {
+					t.Errorf("expected restored file to exist at %s, but it doesn't", file.PathAbs())
+				}
+				if ok, _ := helpers.CheckIfSymlink(file.PathAbs()); ok {
+					t.Errorf("expected restored file to not be a symlink, but it is")
+				}
+			}
+		})
+	}
+}
+
 func _setupBackupEnv(backupDir, dir string, num int) []*ConfigFile {
 	c := vconfig.GetConfig()
 	c.SetBackupDir(backupDir)
