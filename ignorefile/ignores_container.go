@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 )
@@ -25,10 +24,6 @@ func NewIgnoresContainer(names ...string) IIgnoresContainer {
 	baseDirs := []string{
 		"./",
 		config.BackupDir,
-	}
-
-	if !helpers.Contains(names, config.IgnoreFile) {
-		names = append(names, config.IgnoreFile)
 	}
 
 	ic := &IgnoresContainer{}

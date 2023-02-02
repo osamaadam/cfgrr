@@ -35,7 +35,6 @@ func runBackup(cmd *cobra.Command, args []string) error {
 	if _, err := ignorefile.InitDefaultIgnoreFile(); err != nil {
 		return errors.WithStack(err)
 	}
-	// Includes the default ignore file by default
 	ignFiles, _ := cmd.Flags().GetStringSlice("ignore_files")
 	ignContainer := ignorefile.NewIgnoresContainer(ignFiles...)
 

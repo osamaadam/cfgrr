@@ -15,8 +15,14 @@ func TestNewIgnoresContainer(t *testing.T) {
 		in   []string
 		out  []string
 	}{
-		// A default name is always provided from the viper config, keep that in mind.
-		// So even if you pass no names, the default name will be added.
+		// Dear future me:
+		// This test is a little unorthodox.
+		// While the out array seems to be empty,
+		// The default behaviour of the function is to look for
+		// the files matching the name in both the current working
+		// directory and in the backup_dir from the viper config.
+		// So if the the name is `.cfgrrignore`, it looks looks for it
+		// in both `.../backup_dir/.cfgrrignore`, and `./.cfgrrignore`.
 		{"no names", []string{}, []string{}},
 		{"one name", []string{"yo"}, []string{}},
 		{"multiple names", []string{"yo", "hi"}, []string{}},
@@ -27,8 +33,6 @@ func TestNewIgnoresContainer(t *testing.T) {
 			c := vconfig.GetConfig()
 			temp := t.TempDir()
 			c.SetBackupDir(temp)
-			// Adding the default file name to the arr of names.
-			tt.in = append(tt.in, c.IgnoreFile)
 			// Adding the backup_dir/name path for each name.
 			for _, name := range tt.in {
 				path := filepath.Join(c.BackupDir, name)
