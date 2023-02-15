@@ -65,7 +65,7 @@ func (i *IgnoreFile) Write(lines ...string) error {
 
 func (i *IgnoreFile) Read() ([]string, error) {
 	lines, err := helpers.ReadFileLines(i.path)
-	if err != nil {
+	if err != nil && os.IsNotExist(err) {
 		return []string{}, errors.WithStack(err)
 	}
 

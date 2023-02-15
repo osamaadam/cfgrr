@@ -113,13 +113,17 @@ func (c *Config) Init() error {
 
 	defaultConfigDir := filepath.Join(userConfig, "cfgrr")
 
-	c.SetBackupDir(defaultConfigDir)
-	c.SetMapFile("cfgrrmap.yaml")
-	c.SetIgnoreFile(".cfgrrignore")
+	viper.SetDefault("backup_dir", defaultConfigDir)
+	viper.SetDefault("map_file", "cfgrrmap.yaml")
+	viper.SetDefault("ignore_file", ".cfgrrignore")
 
 	if err := viper.ReadInConfig(); err != nil {
+		viper.Unmarshal(c)
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; creating it.
+			c.SetBackupDir(defaultConfigDir)
+			c.SetMapFile("cfgrrmap.yaml")
+			c.SetIgnoreFile(".cfgrrignore")
 			if err := viper.SafeWriteConfig(); err != nil {
 				return errors.WithStack(err)
 			}

@@ -72,6 +72,12 @@ cfgrr backup [root_path] [...files]
 
 > :bell: You'll be prompted to choose the files you'd like to backup.
 
+To skip the prompt, use the `--all` flag.
+
+```sh
+cfgrr backup ~/dotfiles/ -a
+```
+
 :mag: For more info, run `cfgrr backup --help`.
 
 ##### Examples:

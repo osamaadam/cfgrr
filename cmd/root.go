@@ -54,8 +54,8 @@ func init() {
 func initConfig() {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
-	} else {
-		if err := vconfig.GetConfig().Init(); err != nil {
+		c := vconfig.GetConfig()
+		if err := c.Init(); err != nil {
 			panic(err)
 		}
 	}
