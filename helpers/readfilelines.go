@@ -3,13 +3,15 @@ package helpers
 import (
 	"bufio"
 	"os"
+
+	"github.com/pkg/errors"
 )
 
 // ReadFileLines reads a file line by line and returns a slice of strings.
 func ReadFileLines(path string) (lines []string, err error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	defer file.Close()
 

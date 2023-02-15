@@ -75,7 +75,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if err := core.RestoreFiles(files...); err != nil {
+	if err := core.BackupFiles(files...); err != nil {
 		return errors.WithStack(err)
 	}
 
