@@ -1,5 +1,7 @@
 # cfgrr (Configurer)
 
+![Demo](./assets/cfgrr-demo.gif)
+
 `cfgrr` is a tool to help manage the myriad of config files usually found on your Linux setup. If you're familiar with [GNU stow](https://www.gnu.org/software/stow/), you'll find `cfgrr` to be an opinionated replacement for `stow` with a much more guided setup.
 
 At the time of typing this, Jan 2023, `cfgrr` should be able to find all your config files, add them to some kind of directory structure, track them with git, and give you the option to push them to your private git remote, and resore them at will.
