@@ -63,5 +63,5 @@ func restore(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	restoreCmd.Flags().BoolVarP(&all, "all", "a", false, "restore all files in the backup directory")
+	restoreCmd.Flags().BoolVarP(&all, "all", "a", false, "restore all files in the backup directory (skip prompt)")
 }

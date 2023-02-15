@@ -22,6 +22,7 @@ var backupCmd = &cobra.Command{
 		`cfgrr b ~/.bashrc`,
 		`cfgrr b ~/.bashrc ~/.zshrc`,
 		`cfgrr b ~/.config/ ~/.bashrc`,
+		`cfgrr b ~/.config ~/.bashrc -a`,
 		`cfgrr b ~/`,
 		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*"`,
 		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*" -d /path/to/backup/dir -i .cfgrrignore -m cfgrrmap.yaml`,
