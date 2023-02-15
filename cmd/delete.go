@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"strings"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
@@ -57,8 +56,6 @@ func deleteRun(cmd *cobra.Command, args []string) (err error) {
 			return errors.WithStack(err)
 		}
 	}
-
-	fmt.Println(files)
 
 	if len(files) == 0 {
 		return nil
