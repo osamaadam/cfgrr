@@ -3,6 +3,7 @@ package configfile
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -134,16 +135,48 @@ func (cf *ConfigFile) Restore() error {
 	return nil
 }
 
+// Creates a copy of the backup file at the restore location.
+// This is usually used with the `DeleteBackup` method.
+func (cf *ConfigFile) HardRestore() error {
+	if err := helpers.EnsureDirExists(filepath.Dir(cf.PathAbs())); err != nil {
+		return errors.WithMessage(err, "couldn't ensure the original file's dir exists")
+	}
+
+	if helpers.CheckFileExists(cf.PathAbs()) {
+		if err := os.Remove(cf.PathAbs()); err != nil {
+			return errors.WithMessagef(err, "couldn't remove the original file: %s", cf.PathAbs())
+		}
+	}
+
+	src, err := os.Open(cf.BackupPath())
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer src.Close()
+
+	dst, err := os.OpenFile(cf.PathAbs(), os.O_RDWR|os.O_CREATE, cf.Perm)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer dst.Close()
+
+	if _, err := io.Copy(dst, src); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
 // Deletes the backup file.
 func (cf *ConfigFile) DeleteBackup(restore bool) error {
 	if restore {
-		if err := os.Rename(cf.BackupPath(), cf.PathAbs()); err != nil {
-			return errors.WithMessagef(err, "couldn't move backup file to the original location: %s", cf.PathAbs())
+		if err := cf.HardRestore(); err != nil {
+			return errors.WithStack(err)
 		}
-	} else {
-		if err := os.Remove(cf.BackupPath()); err != nil {
-			return errors.WithMessagef(err, "couldn't remove backup file: %s", cf.BackupPath())
-		}
+	}
+
+	if err := os.Remove(cf.BackupPath()); err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil

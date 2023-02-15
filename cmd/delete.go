@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"strings"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
@@ -49,12 +50,15 @@ func deleteRun(cmd *cobra.Command, args []string) (err error) {
 			return errors.WithStack(err)
 		}
 
-		files := helpers.GetMapValues(m)
+		files = helpers.GetMapValues(m)
 
-		if err := prompt.PromptForFileSelection(&files, "Select the files to delete: "); err != nil {
+		files, err = prompt.PromptForFileSelection(files, "Select the files to delete: ")
+		if err != nil {
 			return errors.WithStack(err)
 		}
 	}
+
+	fmt.Println(files)
 
 	if len(files) == 0 {
 		return nil

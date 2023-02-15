@@ -45,7 +45,8 @@ func restore(cmd *cobra.Command, args []string) error {
 	files := helpers.GetMapValues(m)
 
 	if !all {
-		if err = prompt.PromptForFileSelection(&files, "Select the files to restore: "); err != nil {
+		files, err = prompt.PromptForFileSelection(files, "Select the files to restore: ")
+		if err != nil {
 			return errors.WithStack(err)
 		}
 	}
