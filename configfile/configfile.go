@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -13,8 +14,9 @@ import (
 )
 
 type ConfigFile struct {
-	Path string
-	Perm os.FileMode
+	Path      string
+	Perm      os.FileMode
+	Browsable bool
 }
 
 /*
@@ -113,12 +115,75 @@ func (cf *ConfigFile) SavePerm() error {
 // Finds the backup dir from the config.
 func (cf *ConfigFile) BackupDir() string {
 	config := vconfig.GetConfig()
-	return config.BackupDir
+	if cf.Browsable {
+		return filepath.Join(config.BackupDir, filepath.Dir(cf.Path))
+	} else {
+		return config.BackupDir
+	}
 }
 
 // Constructs the backup file path.
 func (cf *ConfigFile) BackupPath() string {
-	return filepath.Join(cf.BackupDir(), cf.HashShort())
+	if cf.Browsable {
+		return filepath.Join(cf.BackupDir(), filepath.Base(cf.Path))
+	} else {
+		return filepath.Join(cf.BackupDir(), cf.HashShort())
+	}
+}
+
+// Updates existing symlink to the new browsable path if it exists.
+func (cf *ConfigFile) UpdateSymlink() error {
+	if !cf.Browsable {
+		return errors.New("file is not browsable")
+	}
+
+	// Checks if a symlink exists.
+	symLinkExists, err := helpers.CheckIfSymlink(cf.PathAbs())
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			// no symlink exists
+			return nil
+		}
+		// I don't know what happened, bubble your red flags
+		return errors.WithStack(err)
+	}
+
+	if !symLinkExists {
+		// no symlink exists
+		return nil
+	}
+
+	// Overwrite the existing symlink.
+	if err := cf.Restore(); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+// Makes the backup file browsable by moving it into
+// backup_dir/.cfgrrsrc and mimicking its original structure.
+func (cf *ConfigFile) MakeBrowsable() error {
+	if cf.Browsable {
+		return errors.New("file is already browsable")
+	}
+
+	orgBackupPath := cf.BackupPath()
+	cf.Browsable = true
+	backupDir := filepath.Dir(cf.BackupPath())
+	if err := helpers.EnsureDirExists(backupDir); err != nil {
+		return errors.WithStack(err)
+	}
+
+	if err := os.Rename(orgBackupPath, cf.BackupPath()); err != nil {
+		return errors.WithStack(err)
+	}
+
+	if err := cf.UpdateSymlink(); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 // Creates a symlink to the backup file.

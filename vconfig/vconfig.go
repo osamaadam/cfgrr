@@ -13,6 +13,7 @@ type Config struct {
 	BackupDir  string `mapstructure:"backup_dir"`
 	MapFile    string `mapstructure:"map_file"`
 	IgnoreFile string `mapstructure:"ignore_file"`
+	Browsable  bool   `mapstructure:"browsable"`
 }
 
 // Gets the config from the config file.
@@ -58,6 +59,11 @@ func (c *Config) SetIgnoreFile(name string) {
 	c.IgnoreFile = name
 }
 
+func (c *Config) SetBrowsable(browsable bool) {
+	viper.Set("browsable", browsable)
+	c.Browsable = browsable
+}
+
 // Sets a key and value to the config file.
 func (c *Config) Set(key string, values ...string) error {
 	viper.Set(key, values)
@@ -69,6 +75,9 @@ func (c *Config) Set(key string, values ...string) error {
 		c.SetMapFile(values[0])
 	case "ignore_file":
 		c.SetIgnoreFile(values[0])
+	case "browsable":
+		browsable := values[0] == "true"
+		c.SetBrowsable(browsable)
 	}
 
 	if err := c.Save(); err != nil {
@@ -83,6 +92,7 @@ func (c *Config) setAll() {
 	viper.Set("backup_dir", c.BackupDir)
 	viper.Set("map_file", c.MapFile)
 	viper.Set("ignore_file", c.IgnoreFile)
+	viper.Set("browsable", c.Browsable)
 }
 
 // Saves the current config to the config file.
@@ -116,6 +126,7 @@ func (c *Config) Init() error {
 	viper.SetDefault("backup_dir", defaultConfigDir)
 	viper.SetDefault("map_file", "cfgrrmap.yaml")
 	viper.SetDefault("ignore_file", ".cfgrrignore")
+	viper.SetDefault("browsable", true)
 
 	if err := viper.ReadInConfig(); err != nil {
 		viper.Unmarshal(c)
@@ -124,6 +135,7 @@ func (c *Config) Init() error {
 			c.SetBackupDir(defaultConfigDir)
 			c.SetMapFile("cfgrrmap.yaml")
 			c.SetIgnoreFile(".cfgrrignore")
+			c.SetBrowsable(true)
 			if err := viper.SafeWriteConfig(); err != nil {
 				return errors.WithStack(err)
 			}
