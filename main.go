@@ -14,7 +14,7 @@ var (
 
 func main() {
 	if err := cmd.Execute(version, tagdate); err != nil {
-		fmt.Print(err)
+		fmt.Printf("%+v", err)
 	}
 }
 
