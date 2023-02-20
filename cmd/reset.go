@@ -3,9 +3,9 @@ package cmd
 import (
 	"os"
 
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var resetCmd = &cobra.Command{
@@ -19,8 +19,9 @@ This will remove the configuration file, and running the program will create a n
 }
 
 func reset(cmd *cobra.Command, args []string) error {
-	if err := viper.SafeWriteConfig(); err != nil {
-		configPath := viper.ConfigFileUsed()
+	v := vconfig.GetViper()
+	if err := v.SafeWriteConfig(); err != nil {
+		configPath := v.ConfigFileUsed()
 		if err := os.Remove(configPath); err != nil {
 			return errors.WithStack(err)
 		}

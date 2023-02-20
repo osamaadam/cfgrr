@@ -16,15 +16,47 @@ type Config struct {
 	Browsable  bool   `mapstructure:"browsable"`
 }
 
+var v *viper.Viper
+var vc Config
+
+// Returns a pointer to the viper instance.
+func GetViper() *viper.Viper {
+	if v == nil {
+		vc.init()
+	}
+	return v
+}
+
 // Gets the config from the config file.
 func GetConfig() *Config {
-	var c Config
-
-	if err := viper.Unmarshal(&c); err != nil {
-		panic(err)
+	if v == nil {
+		// Viper is not initialized.
+		if err := vc.init(); err != nil {
+			panic(err)
+		}
+		// Refreshing the values to read from Viper.
+		if err := vc.refresh(); err != nil {
+			panic(err)
+		}
 	}
 
-	return &c
+	return &vc
+}
+
+// Refreshes the config struct.
+func (c *Config) refresh() error {
+	return v.Unmarshal(c)
+}
+
+// Sets the main config file to read from.
+func (c *Config) SetConfigFile(file string) error {
+	v.SetConfigFile(file)
+
+	if err := c.refresh(); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 // Gets the full path of the map file.
@@ -41,21 +73,21 @@ func (c *Config) GetIgnoreFilePath() string {
 // Does not save the config.
 func (c *Config) SetBackupDir(path string) {
 	path = filepath.Clean(path)
-	viper.Set("backup_dir", path)
+	v.Set("backup_dir", path)
 	c.BackupDir = path
 }
 
 // Sets the map file.
 // Does not save the config.
 func (c *Config) SetMapFile(name string) {
-	viper.Set("map_file", name)
+	v.Set("map_file", name)
 	c.MapFile = name
 }
 
 // Sets the ignore file.
 // Does not save the config.
 func (c *Config) SetIgnoreFile(name string) {
-	viper.Set("ignore_file", name)
+	v.Set("ignore_file", name)
 	c.IgnoreFile = name
 }
 
@@ -66,7 +98,7 @@ func (c *Config) SetBrowsable(browsable bool) {
 
 // Sets a key and value to the config file.
 func (c *Config) Set(key string, values ...string) error {
-	viper.Set(key, values)
+	v.Set(key, values)
 
 	switch key {
 	case "backup_dir":
@@ -87,18 +119,17 @@ func (c *Config) Set(key string, values ...string) error {
 	return nil
 }
 
-// Sets all the config values for viper.
+// Sets all the config values for v.
 func (c *Config) setAll() {
-	viper.Set("backup_dir", c.BackupDir)
-	viper.Set("map_file", c.MapFile)
-	viper.Set("ignore_file", c.IgnoreFile)
-	viper.Set("browsable", c.Browsable)
+	v.Set("backup_dir", c.BackupDir)
+	v.Set("map_file", c.MapFile)
+	v.Set("ignore_file", c.IgnoreFile)
 }
 
 // Saves the current config to the config file.
 func (c *Config) Save() error {
 	c.setAll()
-	if err := viper.WriteConfig(); err != nil {
+	if err := v.WriteConfig(); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -107,14 +138,15 @@ func (c *Config) Save() error {
 
 // Initializes the config.
 // This should be called on the startup of the app.
-func (c *Config) Init() error {
+func (c *Config) init() error {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	viper.AddConfigPath(homedir)
-	viper.SetConfigType("yaml")
-	viper.SetConfigName(".cfgrr")
+	v = viper.New()
+	v.AddConfigPath(homedir)
+	v.SetConfigType("yaml")
+	v.SetConfigName(".cfgrr")
 
 	userConfig, _ := os.UserConfigDir()
 	if userConfig == "" {
@@ -123,20 +155,20 @@ func (c *Config) Init() error {
 
 	defaultConfigDir := filepath.Join(userConfig, "cfgrr")
 
-	viper.SetDefault("backup_dir", defaultConfigDir)
-	viper.SetDefault("map_file", "cfgrrmap.yaml")
-	viper.SetDefault("ignore_file", ".cfgrrignore")
-	viper.SetDefault("browsable", true)
+	v.SetDefault("backup_dir", defaultConfigDir)
+	v.SetDefault("map_file", "cfgrrmap.yaml")
+	v.SetDefault("ignore_file", ".cfgrrignore")
 
-	if err := viper.ReadInConfig(); err != nil {
-		viper.Unmarshal(c)
+	if err := v.ReadInConfig(); err != nil {
+		if err := c.refresh(); err != nil {
+			return errors.WithStack(err)
+		}
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; creating it.
 			c.SetBackupDir(defaultConfigDir)
 			c.SetMapFile("cfgrrmap.yaml")
 			c.SetIgnoreFile(".cfgrrignore")
-			c.SetBrowsable(true)
-			if err := viper.SafeWriteConfig(); err != nil {
+			if err := v.SafeWriteConfig(); err != nil {
 				return errors.WithStack(err)
 			}
 		} else {

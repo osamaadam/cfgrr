@@ -7,7 +7,6 @@ import (
 
 	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -34,13 +33,17 @@ func init() {
 		panic(err)
 	}
 
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", filepath.Join(homedir, ".cfgrr.yaml"), "config file")
-	rootCmd.PersistentFlags().StringP("backup_dir", "d", "", "backup directory (default $HOME/.config/cfgrr)")
-	rootCmd.PersistentFlags().StringSliceP("ignore_files", "i", []string{".cfgrrignore", ".gitignore"}, "ignore file")
-	rootCmd.PersistentFlags().StringP("map_file", "m", "", "map file (default cfgrrmap.yaml)")
+	c := vconfig.GetConfig()
 
-	viper.BindPFlag("backup_dir", rootCmd.PersistentFlags().Lookup("backup_dir"))
-	viper.BindPFlag("map_file", rootCmd.PersistentFlags().Lookup("map_file"))
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", filepath.Join(homedir, ".cfgrr.yaml"), "config file")
+	rootCmd.PersistentFlags().StringP("backup_dir", "d", c.BackupDir, "backup directory")
+	rootCmd.PersistentFlags().StringSliceP("ignore_files", "i", []string{".cfgrrignore", ".gitignore"}, "ignore file")
+	rootCmd.PersistentFlags().StringP("map_file", "m", c.MapFile, "map file")
+
+	v := vconfig.GetViper()
+
+	v.BindPFlag("backup_dir", rootCmd.PersistentFlags().Lookup("backup_dir"))
+	v.BindPFlag("map_file", rootCmd.PersistentFlags().Lookup("map_file"))
 
 	rootCmd.AddCommand(restoreCmd)
 	rootCmd.AddCommand(backupCmd)
@@ -53,10 +56,8 @@ func init() {
 
 func initConfig() {
 	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
+		// The user provided a custom config file.
 		c := vconfig.GetConfig()
-		if err := c.Init(); err != nil {
-			panic(err)
-		}
+		c.SetConfigFile(cfgFile)
 	}
 }

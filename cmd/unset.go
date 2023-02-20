@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
 
@@ -34,7 +34,8 @@ func runUnset(cmd *cobra.Command, args []string) error {
 // Unsets the given variables from the config file.
 // Copied from https://github.com/spf13/viper/issues/632#issuecomment-869668629
 func unset(vars ...string) error {
-	cfg := viper.AllSettings()
+	vc := vconfig.GetViper()
+	cfg := vc.AllSettings()
 	vals := cfg
 
 	for _, v := range vars {
@@ -65,9 +66,9 @@ func unset(vars ...string) error {
 		return err
 	}
 
-	if err = viper.ReadConfig(bytes.NewReader(b)); err != nil {
+	if err = vc.ReadConfig(bytes.NewReader(b)); err != nil {
 		return err
 	}
 
-	return viper.WriteConfig()
+	return vc.WriteConfig()
 }
