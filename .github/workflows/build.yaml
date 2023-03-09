@@ -2,10 +2,8 @@ name: Publish binaries for release
 
 on:
   push:
-    branches:
-      - master
     tags:
-      - "*"
+      - "v*"
 
 jobs:
   publish:
