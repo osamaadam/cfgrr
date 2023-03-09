@@ -18,7 +18,7 @@ jobs:
       - name: Generate binaries
         run: make build
       - name: Upload binaries
-      - uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: bin/*
