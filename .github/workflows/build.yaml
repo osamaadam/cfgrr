@@ -2,6 +2,8 @@ name: Publish binaries for release
 
 on:
   push:
+    branches:
+      - master
     tags:
       - "*"
 
