@@ -180,14 +180,6 @@ If the user were to use the `--restore` flag, the symlinks created previously wo
 cfgrr delete --restore [...files]
 ```
 
-By default, the `-r` flag only replaces the files if they are symlinks to the target. To restore the files regardless if they are symlinks or not, use the `--force` flag.
-
-```sh
-cfgrr delete --restore --force [...files]
-```
-
-or more compactly, `cfgrr d -rf [...files]`.
-
 In case no files were provided to the argument, the user will be prompted to choose the files to delete.
 
 :mag: For more info, run `cfgrr delete --help`.
