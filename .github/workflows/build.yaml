@@ -1,0 +1,26 @@
+name: Publish binaries for release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  name: Build binaries and link them to the release
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v2
+    - name: Setup go environment
+      uses: actions/setup-go@v3
+      with:
+        go-version: ">=1.18"
+    - name: Generate binaries
+      run: make build
+    - name: Upload binaries
+    - uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: bin/*
+        tag: ${{ github.ref }}
+        overwrite: true
+        file_glob: true
