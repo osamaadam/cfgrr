@@ -16,8 +16,8 @@ import (
 
 type IIgnoreFile interface {
 	fmt.Stringer
-	Write(...string) error
-	Read() ([]string, error)
+	WriteLines(...string) error
+	ReadLines() ([]string, error)
 	Path() string
 }
 
@@ -37,8 +37,8 @@ func (i *IgnoreFile) String() string {
 	return string(r)
 }
 
-func (i *IgnoreFile) Write(lines ...string) error {
-	readLines, err := i.Read()
+func (i *IgnoreFile) WriteLines(lines ...string) error {
+	readLines, err := i.ReadLines()
 	if err != nil && os.IsNotExist(err) {
 		return errors.WithStack(err)
 	}
@@ -63,7 +63,7 @@ func (i *IgnoreFile) Write(lines ...string) error {
 	return nil
 }
 
-func (i *IgnoreFile) Read() ([]string, error) {
+func (i *IgnoreFile) ReadLines() ([]string, error) {
 	lines, err := helpers.ReadFileLines(i.path)
 	if err != nil && os.IsNotExist(err) {
 		return []string{}, errors.WithStack(err)
@@ -80,13 +80,13 @@ func InitDefaultIgnoreFile() (IIgnoreFile, error) {
 	c := vconfig.GetConfig()
 	ign := NewIgnoreFile(c.GetIgnoreFilePath())
 
-	lines, err := ign.Read()
+	lines, err := ign.ReadLines()
 	if err != nil && os.IsNotExist(err) {
 		return nil, errors.WithStack(err)
 	}
 
 	if len(lines) == 0 {
-		if err := ign.Write(defaultIgnores...); err != nil {
+		if err := ign.WriteLines(defaultIgnores...); err != nil {
 			return nil, errors.WithStack(err)
 		}
 	}
