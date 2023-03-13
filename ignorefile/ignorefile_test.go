@@ -24,7 +24,7 @@ func TestInitDefaultIgnoreFile(t *testing.T) {
 			t.Fatalf("expected %s to exist", ignFile.Path())
 		}
 
-		lines, err := ignFile.Read()
+		lines, err := ignFile.ReadLines()
 		if err != nil {
 			t.Fatalf("expected nil, got %v", err)
 		}
@@ -57,14 +57,14 @@ func TestIgnoreFile(t *testing.T) {
 			c.SetIgnoreFile(".cfgrrignore")
 			i := NewIgnoreFile(c.GetIgnoreFilePath())
 
-			if err := i.Write(tt.existing...); err != nil {
+			if err := i.WriteLines(tt.existing...); err != nil {
 				t.Errorf("expected nil, got %v", err)
 			}
-			if err := i.Write(tt.in...); err != nil {
+			if err := i.WriteLines(tt.in...); err != nil {
 				t.Errorf("expected nil, got %v", err)
 			}
 
-			lines, err := i.Read()
+			lines, err := i.ReadLines()
 			if err != nil && !tt.wantErr {
 				t.Errorf("expected nil, got %v", err)
 			}

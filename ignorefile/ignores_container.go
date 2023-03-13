@@ -11,7 +11,7 @@ import (
 type IIgnoresContainer interface {
 	fmt.Stringer
 	AddIgnoreFile(IIgnoreFile)
-	Read() ([]string, error)
+	ReadLines() ([]string, error)
 	Paths() []string
 }
 
@@ -38,7 +38,7 @@ func NewIgnoresContainer(names ...string) IIgnoresContainer {
 }
 
 func (ic *IgnoresContainer) String() string {
-	r, _ := ic.Read()
+	r, _ := ic.ReadLines()
 	return fmt.Sprintf("%v", r)
 }
 
@@ -46,10 +46,10 @@ func (ic *IgnoresContainer) AddIgnoreFile(ignFile IIgnoreFile) {
 	ic.ignFiles = append(ic.ignFiles, ignFile)
 }
 
-func (ic *IgnoresContainer) Read() ([]string, error) {
+func (ic *IgnoresContainer) ReadLines() ([]string, error) {
 	var igns []string
 	for _, ignFile := range ic.ignFiles {
-		ignores, err := ignFile.Read()
+		ignores, err := ignFile.ReadLines()
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}

@@ -20,7 +20,7 @@ func FindFiles(rootPath string, igContainer ignorefile.IIgnoresContainer, patter
 
 	c := vconfig.GetConfig()
 
-	ignoreGlobs, err := igContainer.Read()
+	ignoreGlobs, err := igContainer.ReadLines()
 	if err != nil && !os.IsNotExist(err) {
 		return nil, err
 	}
