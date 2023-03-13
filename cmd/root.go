@@ -14,8 +14,10 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "cfgrr [sub_command]",
-	Short: `A one-hit solution for your configuration trouble`,
+	Use:           "cfgrr [sub_command]",
+	Short:         `A one-hit solution for your configuration trouble`,
+	SilenceErrors: true,
+	SilenceUsage:  true,
 }
 
 func Execute(version, tagdate string) error {
@@ -39,6 +41,10 @@ func init() {
 	rootCmd.PersistentFlags().StringP("backup_dir", "d", c.BackupDir, "backup directory")
 	rootCmd.PersistentFlags().StringSliceP("ignore_files", "i", []string{".cfgrrignore", ".gitignore"}, "ignore file")
 	rootCmd.PersistentFlags().StringP("map_file", "m", c.MapFile, "map file")
+
+	rootCmd.MarkFlagDirname("backup_dir")
+	rootCmd.MarkFlagFilename("map_file", "yaml", "json")
+	rootCmd.MarkFlagFilename("config", "yaml", "json")
 
 	v := vconfig.GetViper()
 
