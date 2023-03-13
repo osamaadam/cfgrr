@@ -9,19 +9,13 @@ import (
 
 	"github.com/osamaadam/cfgrr/cmd"
 	"github.com/osamaadam/cfgrr/helpers"
-	"github.com/pkg/errors"
 )
 
 var (
 	version     string
 	tagdate     string
-	logfilePath string
 	ErrorLogger *log.Logger
 )
-
-type stackTracer interface {
-	StackTrace() errors.StackTrace
-}
 
 func main() {
 	if err := cmd.Execute(version, tagdate); err != nil {
@@ -38,7 +32,7 @@ func init() {
 	if err := helpers.EnsureDirExists(shareDir); err != nil {
 		return
 	}
-	logfilePath = filepath.Join(shareDir, "cfgrr.log")
+	logfilePath := filepath.Join(shareDir, "cfgrr.log")
 	file, err := os.OpenFile(logfilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		return
