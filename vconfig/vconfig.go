@@ -27,17 +27,6 @@ func GetViper() *viper.Viper {
 	return v
 }
 
-var v *viper.Viper
-var vc Config
-
-// Returns a pointer to the viper instance.
-func GetViper() *viper.Viper {
-	if v == nil {
-		vc.init()
-	}
-	return v
-}
-
 // Gets the config from the config file.
 func GetConfig() *Config {
 	if v == nil {
@@ -169,7 +158,6 @@ func (c *Config) init() error {
 	v.SetDefault("backup_dir", defaultConfigDir)
 	v.SetDefault("map_file", "cfgrrmap.yaml")
 	v.SetDefault("ignore_file", ".cfgrrignore")
-
 	if err := v.ReadInConfig(); err != nil {
 		if err := c.refresh(); err != nil {
 			return errors.WithStack(err)

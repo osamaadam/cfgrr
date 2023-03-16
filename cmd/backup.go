@@ -8,6 +8,7 @@ import (
 	"github.com/osamaadam/cfgrr/core"
 	"github.com/osamaadam/cfgrr/ignorefile"
 	"github.com/osamaadam/cfgrr/prompt"
+	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -32,6 +33,8 @@ var backupCmd = &cobra.Command{
 
 func runBackup(cmd *cobra.Command, args []string) error {
 	paths := args
+
+	config := vconfig.GetConfig()
 
 	if _, err := ignorefile.InitDefaultIgnoreFile(); err != nil {
 		return errors.WithStack(err)
@@ -75,6 +78,14 @@ func runBackup(cmd *cobra.Command, args []string) error {
 		files, err = prompt.PromptForFileSelection(files, "Which files would you like to track? (this will overwrite existing files)")
 		if err != nil {
 			return errors.WithStack(err)
+		}
+	}
+
+	// Set each file as browsable if the user has browsable set to true
+	// in their config.
+	if config.Browsable {
+		for _, f := range files {
+			f.Browsable = true
 		}
 	}
 
