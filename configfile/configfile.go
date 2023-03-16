@@ -48,6 +48,10 @@ func NewConfigFile(path string) (file *ConfigFile, err error) {
 
 	file = &ConfigFile{
 		Path: relPath,
+		// This is to maintain backward compatibility.
+		// Files backed up after v1.5.0 will be browsable by default.
+		// The use can use `replicate` subcommand to turn old files browsable.
+		Browsable: true,
 	}
 
 	if err := file.SavePerm(); err != nil {
@@ -279,6 +283,13 @@ func (cf *ConfigFile) Backup() error {
 	// Ensure the backup dir exists
 	if err := helpers.EnsureDirExists(cf.BackupDir()); err != nil {
 		return errors.WithMessage(err, "couldn't ensure backup dir exists")
+	}
+
+	if cf.Browsable {
+		// Ensure the internals dir exists
+		if err := helpers.EnsureDirExists(cf.InternalsDir()); err != nil {
+			return errors.WithMessage(err, "couldn't ensure internals dir exists")
+		}
 	}
 
 	// Move the file to the backup dir

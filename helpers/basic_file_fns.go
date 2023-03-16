@@ -11,7 +11,7 @@ import (
 // Checks if a file exists.
 func CheckFileExists(path string) bool {
 	_, err := os.Stat(path)
-	return !os.IsNotExist(err)
+	return !errors.Is(err, os.ErrNotExist)
 }
 
 // Creates a directory (recursively) if it does not exist.
