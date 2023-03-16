@@ -167,7 +167,7 @@ func (c *Config) init() error {
 			c.SetBackupDir(defaultConfigDir)
 			c.SetMapFile("cfgrrmap.yaml")
 			c.SetIgnoreFile(".cfgrrignore")
-			if err := v.SafeWriteConfig(); err != nil {
+			if err := viper.SafeWriteConfig(); err != nil {
 				return errors.WithStack(err)
 			}
 		} else {
