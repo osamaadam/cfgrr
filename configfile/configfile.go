@@ -125,11 +125,7 @@ func (cf *ConfigFile) SavePerm() error {
 // Finds the backup dir from the config.
 func (cf *ConfigFile) BackupDir() string {
 	config := vconfig.GetConfig()
-	if cf.Browsable {
-		return filepath.Join(config.BackupDir, filepath.Dir(cf.Path))
-	} else {
-		return config.BackupDir
-	}
+	return config.BackupDir
 }
 
 // Constructs the backup file path.
