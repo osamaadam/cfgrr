@@ -50,7 +50,7 @@ func NewConfigFile(path string) (file *ConfigFile, err error) {
 		Path: relPath,
 		// This is to maintain backward compatibility.
 		// Files backed up after v1.5.0 will be browsable by default.
-		// The use can use `replicate` subcommand to turn old files browsable.
+		// The user could use `replicate` subcommand to turn old files browsable.
 		Browsable: true,
 	}
 
