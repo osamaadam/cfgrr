@@ -15,7 +15,7 @@ import (
 
 var replicateCmd = &cobra.Command{
 	Use:     "replicate [root_dir]",
-	Short:   "Creates a replica of the configuration files to the root dir",
+	Short:   "Creates a replica of the configuration files to root_dir. If the file is already browsable, updates the browsable replica",
 	Aliases: []string{"rep", "browse"},
 	Args:    cobra.MaximumNArgs(1),
 	Example: strings.Join([]string{

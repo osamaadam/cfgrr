@@ -95,7 +95,11 @@ func (yf *YamlMapFile) AddFiles(files ...*cf.ConfigFile) error {
 	}
 
 	for _, file := range files {
-		m[file.HashShort()] = file
+		fileHash := file.HashShort()
+		if f, ok := m[fileHash]; ok {
+			file.Browsable = f.Browsable || file.Browsable
+		}
+		m[fileHash] = file
 	}
 
 	if err := yf.write(m); err != nil {

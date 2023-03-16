@@ -65,5 +65,11 @@ func MakeFilesBrowsable(baseDir string, files ...*cf.ConfigFile) error {
 		}
 	}
 
+	mapFile := mapfile.NewMapFile()
+
+	if err := mapFile.AddFiles(files...); err != nil {
+		return errors.WithStack(err)
+	}
+
 	return nil
 }
