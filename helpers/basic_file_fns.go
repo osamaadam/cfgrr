@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 
@@ -10,7 +11,7 @@ import (
 // Checks if a file exists.
 func CheckFileExists(path string) bool {
 	_, err := os.Stat(path)
-	return !os.IsNotExist(err)
+	return !errors.Is(err, os.ErrNotExist)
 }
 
 // Creates a directory (recursively) if it does not exist.
@@ -33,4 +34,29 @@ func CheckIfSymlink(path string) (bool, error) {
 	}
 
 	return fi.Mode()&os.ModeSymlink != 0, nil
+}
+
+// Copies file from one place to another creating
+// directory structure if needed.
+func CopyFile(dest, origin string) error {
+	if err := EnsureDirExists(filepath.Dir(dest)); err != nil {
+		return errors.WithStack(err)
+	}
+	destFile, err := os.Create(dest)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer destFile.Close()
+
+	originFile, err := os.Open(origin)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer originFile.Close()
+
+	if _, err = io.Copy(destFile, originFile); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }

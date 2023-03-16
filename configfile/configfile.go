@@ -13,9 +13,12 @@ import (
 )
 
 type ConfigFile struct {
-	Path string
-	Perm os.FileMode
+	Path      string
+	Perm      os.FileMode
+	Browsable bool
 }
+
+var internalsDir = ".internals"
 
 /*
 Tidies the path before initializing the object.
@@ -45,6 +48,10 @@ func NewConfigFile(path string) (file *ConfigFile, err error) {
 
 	file = &ConfigFile{
 		Path: relPath,
+		// This is to maintain backward compatibility.
+		// Files backed up after v1.5.0 will be browsable by default.
+		// The user could use `replicate` subcommand to turn old files browsable.
+		Browsable: true,
 	}
 
 	if err := file.SavePerm(); err != nil {
@@ -62,6 +69,10 @@ Name = ".config"
 */
 func (cf *ConfigFile) Name() string {
 	return filepath.Base(cf.Path)
+}
+
+func (cf *ConfigFile) InternalsDir() string {
+	return filepath.Join(cf.BackupDir(), internalsDir)
 }
 
 // Returns the absolute path of the file.
@@ -118,7 +129,66 @@ func (cf *ConfigFile) BackupDir() string {
 
 // Constructs the backup file path.
 func (cf *ConfigFile) BackupPath() string {
+	if cf.Browsable {
+		return filepath.Join(cf.InternalsDir(), cf.HashShort())
+	}
 	return filepath.Join(cf.BackupDir(), cf.HashShort())
+}
+
+// Makes the backup file browsable by moving it into
+// backup_dir/home and mimicking its original structure.
+func (cf *ConfigFile) MakeBrowsable(baseDir string) error {
+	if err := cf.updateBrowsable(baseDir); err != nil {
+		return errors.WithStack(err)
+	}
+
+	if !cf.Browsable {
+		if err := cf.hideInternals(); err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
+	return nil
+}
+
+func (cf *ConfigFile) updateBrowsable(baseDir string) error {
+	isAbs := filepath.IsAbs(baseDir)
+	mimickBackupPath := ""
+	if isAbs {
+		mimickBackupPath = filepath.Join(baseDir, cf.Path)
+	} else {
+		mimickBackupPath = filepath.Join(cf.BackupDir(), baseDir, cf.Path)
+	}
+
+	if err := helpers.CopyFile(mimickBackupPath, cf.BackupPath()); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+// Hides the hash file into the internals directory.
+func (cf *ConfigFile) hideInternals() error {
+	if cf.Browsable {
+		return nil
+	}
+	if err := helpers.EnsureDirExists(cf.InternalsDir()); err != nil {
+		return errors.WithStack(err)
+	}
+
+	orgBackupPath := cf.BackupPath()
+	cf.Browsable = true
+
+	if err := os.Rename(orgBackupPath, cf.BackupPath()); err != nil {
+		cf.Browsable = false
+		return errors.WithStack(err)
+	}
+
+	if err := cf.updateRestoreLink(); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 // Creates a symlink to the backup file.
@@ -130,6 +200,30 @@ func (cf *ConfigFile) Restore() error {
 	}
 	if err := os.Symlink(cf.BackupPath(), cf.PathAbs()); err != nil {
 		return errors.WithMessage(err, "couldn't create a symlink to the backup file")
+	}
+
+	return nil
+}
+
+// Updates the restore link if the original file is a symlink.
+func (cf *ConfigFile) updateRestoreLink() error {
+	symLinkExists, err := helpers.CheckIfSymlink(cf.PathAbs())
+	if err != nil {
+		// If the file doesn't exist, we don't need to update the restore link.
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return errors.WithStack(err)
+	}
+
+	if symLinkExists {
+		// If the file is a symlink, we need to update the restore link.
+		if err := os.Remove(cf.PathAbs()); err != nil {
+			return errors.WithStack(err)
+		}
+		if err := cf.Restore(); err != nil {
+			return errors.WithStack(err)
+		}
 	}
 
 	return nil
@@ -189,6 +283,13 @@ func (cf *ConfigFile) Backup() error {
 	// Ensure the backup dir exists
 	if err := helpers.EnsureDirExists(cf.BackupDir()); err != nil {
 		return errors.WithMessage(err, "couldn't ensure backup dir exists")
+	}
+
+	if cf.Browsable {
+		// Ensure the internals dir exists
+		if err := helpers.EnsureDirExists(cf.InternalsDir()); err != nil {
+			return errors.WithMessage(err, "couldn't ensure internals dir exists")
+		}
 	}
 
 	// Move the file to the backup dir

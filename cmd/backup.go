@@ -70,6 +70,7 @@ func runBackup(cmd *cobra.Command, args []string) error {
 	}
 
 	if !all {
+		// Trigger the prompt if the user didn't set the `--all` flag.
 		var err error
 		files, err = prompt.PromptForFileSelection(files, "Which files would you like to track? (this will overwrite existing files)")
 		if err != nil {

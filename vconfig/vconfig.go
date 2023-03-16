@@ -13,6 +13,18 @@ type Config struct {
 	BackupDir  string `mapstructure:"backup_dir"`
 	MapFile    string `mapstructure:"map_file"`
 	IgnoreFile string `mapstructure:"ignore_file"`
+	Browsable  bool   `mapstructure:"browsable"`
+}
+
+var v *viper.Viper
+var vc Config
+
+// Returns a pointer to the viper instance.
+func GetViper() *viper.Viper {
+	if v == nil {
+		vc.init()
+	}
+	return v
 }
 
 var v *viper.Viper
@@ -90,6 +102,11 @@ func (c *Config) SetIgnoreFile(name string) {
 	c.IgnoreFile = name
 }
 
+func (c *Config) SetBrowsable(browsable bool) {
+	viper.Set("browsable", browsable)
+	c.Browsable = browsable
+}
+
 // Sets a key and value to the config file.
 func (c *Config) Set(key string, values ...string) error {
 	v.Set(key, values)
@@ -101,6 +118,9 @@ func (c *Config) Set(key string, values ...string) error {
 		c.SetMapFile(values[0])
 	case "ignore_file":
 		c.SetIgnoreFile(values[0])
+	case "browsable":
+		browsable := values[0] == "true"
+		c.SetBrowsable(browsable)
 	}
 
 	if err := c.Save(); err != nil {

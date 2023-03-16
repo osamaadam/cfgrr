@@ -56,3 +56,20 @@ func DeleteFiles(restore bool, files ...*cf.ConfigFile) error {
 
 	return nil
 }
+
+// Creates a browsable replica of the backedup config files at `baseDir`.
+func MakeFilesBrowsable(baseDir string, files ...*cf.ConfigFile) error {
+	for _, file := range files {
+		if err := file.MakeBrowsable(baseDir); err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
+	mapFile := mapfile.NewMapFile()
+
+	if err := mapFile.AddFiles(files...); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}

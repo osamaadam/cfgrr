@@ -183,3 +183,29 @@ cfgrr delete --restore [...files]
 In case no files were provided to the argument, the user will be prompted to choose the files to delete.
 
 :mag: For more info, run `cfgrr delete --help`.
+
+#### Replicate:
+
+Creates a browsable replica of the files. Could be useful if the user may want to share the files in a manner that's human readable.
+
+```sh
+cfgrr replicate
+```
+
+By default, this creates the replica at `.config/cfgrr/home/` (assuming the user is using default configurations) or generally at `BACKUP_DIR/home/`.
+
+To generate the replica at a different location:
+
+```sh
+cfgrr replicate ~/path/to/replica
+```
+
+> The path must be absolute, otherwise the tool would assume the path is relative to the backup directory.
+
+You know the drill by this point, to skip the prompt, use `--all` flag.
+
+```sh
+cfgrr replicate --all
+```
+
+:mag: For more info, run `cfgrr replicate --help`.
