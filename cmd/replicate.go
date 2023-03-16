@@ -19,8 +19,11 @@ var replicateCmd = &cobra.Command{
 	Aliases: []string{"rep", "browse"},
 	Args:    cobra.MaximumNArgs(1),
 	Example: strings.Join([]string{
-		`cfgrr replicate ~/browsable/`,
 		`cfgrr replicate`,
+		`cfgrr replicate --all`,
+		`cfgrr replicate -a`,
+		`cfgrr replicate ~/browsable/`,
+		`cfgrr replicate ~/browsable/ -a`,
 	}, "\n"),
 	RunE: runReplicate,
 }
