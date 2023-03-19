@@ -67,6 +67,12 @@ func LinkFile(dest, origin string) error {
 		return errors.WithStack(err)
 	}
 
+	if err := os.Remove(dest); err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			return errors.WithStack(err)
+		}
+	}
+
 	if err := os.Link(origin, dest); err != nil {
 		return errors.WithStack(err)
 	}
