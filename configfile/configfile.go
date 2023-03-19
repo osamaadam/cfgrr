@@ -182,6 +182,7 @@ func (cf *ConfigFile) MakeBrowsable(baseDir string) error {
 	return nil
 }
 
+// Creates a hard link of the file at the browsable destination.
 func (cf *ConfigFile) updateBrowsable(baseDir string) error {
 	isAbs := filepath.IsAbs(baseDir)
 	mimickBackupPath := ""
@@ -191,7 +192,7 @@ func (cf *ConfigFile) updateBrowsable(baseDir string) error {
 		mimickBackupPath = filepath.Join(cf.BackupDir(), baseDir, cf.Path)
 	}
 
-	if err := helpers.CopyFile(mimickBackupPath, cf.BackupPath()); err != nil {
+	if err := helpers.LinkFile(mimickBackupPath, cf.BackupPath()); err != nil {
 		return errors.WithStack(err)
 	}
 

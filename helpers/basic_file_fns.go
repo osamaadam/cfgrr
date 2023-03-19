@@ -60,3 +60,16 @@ func CopyFile(dest, origin string) error {
 
 	return nil
 }
+
+// Creates a hard link of a file.
+func LinkFile(dest, origin string) error {
+	if err := EnsureDirExists(filepath.Dir(dest)); err != nil {
+		return errors.WithStack(err)
+	}
+
+	if err := os.Link(origin, dest); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
