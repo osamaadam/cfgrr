@@ -20,7 +20,7 @@ func EnsureDirExists(path string) error {
 	dir := filepath.Clean(path)
 
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		return errors.WithStack(err)
+		return errors.WithMessage(err, "couldn't create directory")
 	}
 
 	return nil

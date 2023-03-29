@@ -36,6 +36,9 @@ func (yf *YamlMapFile) Path() string {
 
 // Opens the map file.
 func (yf *YamlMapFile) open() (*os.File, error) {
+	if err := helpers.EnsureDirExists(filepath.Dir(yf.path)); err != nil {
+		return nil, errors.WithMessage(err, "couldn't create base directory for yaml file")
+	}
 	return os.OpenFile(yf.path, os.O_RDWR|os.O_CREATE, os.FileMode(0644))
 }
 
