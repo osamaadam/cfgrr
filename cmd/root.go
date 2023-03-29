@@ -56,6 +56,10 @@ func init() {
 	rootCmd.MarkFlagFilename("map_file", "yaml", "json")
 	rootCmd.MarkFlagFilename("config", "yaml", "json")
 
+	rootCmd.MarkFlagDirname("backup_dir")
+	rootCmd.MarkFlagFilename("map_file", "yaml", "json")
+	rootCmd.MarkFlagFilename("config", "yaml", "json")
+
 	v := vconfig.GetViper()
 
 	v.BindPFlag("backup_dir", rootCmd.PersistentFlags().Lookup("backup_dir"))
