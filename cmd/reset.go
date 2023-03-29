@@ -14,7 +14,7 @@ var resetCmd = &cobra.Command{
 	RunE:    reset,
 	Args:    cobra.NoArgs,
 	Short:   "Reset the configuration files to their original state",
-	Long: `Reset the configuration files to their original state
+	Long: `Reset the configuration files to their original state.
 This will remove the configuration file, and running the program will create a new one with the default values`,
 }
 

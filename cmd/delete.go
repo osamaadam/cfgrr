@@ -15,8 +15,6 @@ import (
 
 var deleteCmd = &cobra.Command{
 	Use:     "delete [...paths]",
-	Short:   "Delete the configuration files from the backup directory",
-	Long:    `Delete the configuration files from the backup directory, also replacing symlinks with the original target.`,
 	Aliases: []string{"d", "del"},
 	RunE:    deleteRun,
 	Example: strings.Join([]string{
@@ -25,6 +23,8 @@ var deleteCmd = &cobra.Command{
 		"cfgrr delete ~/.vimrc ~/.zshrc",
 		"cfgrr delete -r ~/.vimrc",
 	}, "\n"),
+	Short: "Delete the configuration files from the backup directory",
+	Long:  `Delete the configuration files from the backup directory, also replacing symlinks with the original target if used with the --replace flag.`,
 }
 
 func deleteRun(cmd *cobra.Command, args []string) (err error) {

@@ -15,7 +15,6 @@ import (
 
 var restoreCmd = &cobra.Command{
 	Use:     "restore",
-	Short:   "Restore the configuration files from the backup directory",
 	Aliases: []string{"r", "res"},
 	RunE:    restore,
 	Example: strings.Join([]string{
@@ -24,7 +23,11 @@ var restoreCmd = &cobra.Command{
 		`cfgrr r -d /path/to/config/dir`,
 		`cfgrr r -d /path/to/config/dir -m cfgrrmap.yaml`,
 	}, "\n"),
-	Args: cobra.NoArgs,
+	Args:  cobra.NoArgs,
+	Short: "Restore the configuration files from the backup directory",
+	Long: `Restore the configuration files from the backup directory.
+This creates a symlink to the file in the backup directory. cfgrr keeps track of where each file should be restored to in its 'cfgrrmap.yaml' file in the backup directory.
+The user would be prompted to pick which files they'd like to restore.`,
 }
 
 func restore(cmd *cobra.Command, args []string) error {

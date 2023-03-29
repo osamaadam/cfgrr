@@ -15,7 +15,6 @@ import (
 
 var replicateCmd = &cobra.Command{
 	Use:     "replicate [root_dir]",
-	Short:   "Creates a replica of the configuration files to root_dir. If the file is already browsable, updates the browsable replica",
 	Aliases: []string{"rep", "browse"},
 	Args:    cobra.MaximumNArgs(1),
 	Example: strings.Join([]string{
@@ -25,7 +24,12 @@ var replicateCmd = &cobra.Command{
 		`cfgrr replicate ~/browsable/`,
 		`cfgrr replicate ~/browsable/ -a`,
 	}, "\n"),
-	RunE: runReplicate,
+	RunE:  runReplicate,
+	Short: "Creates a replica of the configuration files to root_dir. If the file is already browsable, updates the browsable replica",
+	Long: `Creates a replica of the configuration files to root_dir. If the file is already browsable, updates the browsable replica.
+This should be run if the user intends to put their configuration on display on any platform. By default cfgrr saves the backed up files as hashes.
+This is to avoid GNU stow's method of replicating the entire file's path structure, and instead relies on a map file to keep track which file should be restored where.
+If the user intends to keep the files private, it wouldn't make sense for them to replicate them. However, they may find it convenient for readability and syntax highlighting.`,
 }
 
 func runReplicate(cmd *cobra.Command, args []string) error {

@@ -14,7 +14,6 @@ import (
 
 var backupCmd = &cobra.Command{
 	Use:     "backup [root_dir] [...files]",
-	Short:   "Backup the configuration files to the backup directory",
 	Aliases: []string{"b", "bkp"},
 	Args:    cobra.MinimumNArgs(1),
 	Example: strings.Join([]string{
@@ -27,7 +26,10 @@ var backupCmd = &cobra.Command{
 		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*"`,
 		`cfgrr b /path/to/root/config/dir -p "**/.*" -p "**/*config*" -d /path/to/backup/dir -i .cfgrrignore -m cfgrrmap.yaml`,
 	}, "\n"),
-	RunE: runBackup,
+	RunE:  runBackup,
+	Short: "Backup the configuration files to the backup directory",
+	Long: `Backup enables the user to move their files to the backup directory, and creates a symlink to the files in-place.
+This action could be reverted by using the delete command with the --replace flag, to learn more run 'cfgrr delete --help'.`,
 }
 
 func runBackup(cmd *cobra.Command, args []string) error {

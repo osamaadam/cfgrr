@@ -11,7 +11,6 @@ import (
 var setCmd = &cobra.Command{
 	Use:     "set [key] [value]",
 	Aliases: []string{"s"},
-	Short:   "Set the value of a configuration variable",
 	Args:    cobra.ExactArgs(2),
 	RunE:    runSet,
 	Example: strings.Join([]string{
@@ -19,6 +18,9 @@ var setCmd = &cobra.Command{
 		`cfgrr s map_file cfgrrmap.yaml`,
 		`cfgrr s ignore_file .cfgrrignore`,
 	}, "\n"),
+	Short: "Set the value of a configuration variable",
+	Long: `Set the value of a configuration variable.
+This is the prefered method for the user to set the application variables instead of manually editing the '.cfgrr.yaml' file at their home directory.`,
 }
 
 func runSet(cmd *cobra.Command, args []string) error {

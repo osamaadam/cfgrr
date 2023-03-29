@@ -9,9 +9,11 @@ import (
 
 var setupCmd = &cobra.Command{
 	Use:   "setup",
-	Short: "Setup the configuration file",
 	Args:  cobra.NoArgs,
 	RunE:  runSetup,
+	Short: "Setup the configuration file",
+	Long: `Setup the configuration file.
+Prompts the user to set their application variables. It is a good idea to run this command after updating cfgrr.`,
 }
 
 func runSetup(cmd *cobra.Command, args []string) error {
