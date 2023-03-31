@@ -4,17 +4,17 @@
 
 `cfgrr` is a tool to help manage the myriad of config files usually found on your Linux setup. If you're familiar with [GNU stow](https://www.gnu.org/software/stow/), you'll find `cfgrr` to be an opinionated replacement for `stow` with a much more guided setup.
 
-At the time of typing this, Jan 2023, `cfgrr` should be able to find all your config files, add them to some kind of directory structure, track them with git, and give you the option to push them to your private git remote, and resore them at will.
+At the time of typing this, Jan 2023, `cfgrr` should be able to find all your config files, add them to some kind of directory structure, track them with git, and give you the option to push them to your private git remote, and restore them at will.
 
 ## Disclaimer
 
-This tool was tested on Linux systems only, though it should also work with MacOS. It also confusingly works on Windows too (though I don't recommend using it there).
+This tool was tested on Linux systems only, though it should also work with macOS. It also confusingly works on Windows too (though I don't recommend using it there).
 
 ## Installation
 
 ### Download the binary
 
-Download the latest binary for [Linux](https://github.com/osamaadam/cfgrr/releases/latest/download/cfgrr_linux), [MacOS](https://github.com/osamaadam/cfgrr/releases/latest/download/cfgrr_macos), or [Windows](https://github.com/osamaadam/cfgrr/releases/latest/download/cfgrr_windows.exe), and don't forget to [add the file to your `$PATH`](https://linuxize.com/post/how-to-add-directory-to-path-in-linux/).
+Download the latest binary for [Linux](https://github.com/osamaadam/cfgrr/releases/latest/download/cfgrr_linux), [macOS](https://github.com/osamaadam/cfgrr/releases/latest/download/cfgrr_macos), or [Windows](https://github.com/osamaadam/cfgrr/releases/latest/download/cfgrr_windows.exe), and don't forget to [add the file to your `$PATH`](https://linuxize.com/post/how-to-add-directory-to-path-in-linux/).
 
 **-or-**
 
@@ -28,7 +28,7 @@ First, clone the repository:
 git clone https://github.com/osamaadam/cfgrr.git
 ```
 
-Then run the install script:
+Then run the installation script:
 
 ```sh
 make install
@@ -38,13 +38,13 @@ The binary would be installed at `${HOME}/go/bin/cfgrr`
 
 ## TL;DR
 
-#### To backup:
+#### To back up:
 
 ```sh
 cfgrr b ~/
 ```
 
-Then choose the files you'd like to backup.
+Then choose the files you'd like to back up.
 
 :sparkles: Poof! A backup of your files will be at `~/.config/cfgrr`.
 
@@ -66,13 +66,13 @@ Currently, `cfgrr` is able to find config files matching certain patterns (curre
 
 :warning: **WARNING** :warning: `backup` will copy the files to the backup directory, and replace them with symlinks to their equivalent in the backup directory.
 
-This will backup all the config files found in the given directory.
+This will back up all the config files found in the given directory.
 
 ```sh
 cfgrr backup [root_path] [...files]
 ```
 
-> :bell: You'll be prompted to choose the files you'd like to backup.
+> :bell: You'll be prompted to choose the files you'd like to back up.
 
 To skip the prompt, use the `--all` flag.
 
@@ -92,7 +92,7 @@ cfgrr backup ~/.config
 cfgrr b ~/.bashrc ~/.zshrc
 ```
 
-This will backup all the config files found in `~/.config` matching the pattern `**/.*` or `**/*config*` (default patterns).
+This will back up all the config files found in `~/.config` matching the pattern `**/.*` or `**/*config*` (default patterns).
 
 #### Restore:
 
@@ -156,7 +156,7 @@ cfgrr unset backup_dir
 
 #### Setup:
 
-This is an interface to setup `cfgrr` for the first time.
+This is an interface to set up `cfgrr` for the first time.
 
 ```sh
 cfgrr setup
@@ -186,7 +186,7 @@ In case no files were provided to the argument, the user will be prompted to cho
 
 #### Replicate:
 
-Creates a browsable replica of the files. Could be useful if the user may want to share the files in a manner that's human readable.
+Creates a browsable replica of the files. Could be useful if the user may want to share the files in a manner that's human-readable.
 
 ```sh
 cfgrr replicate
