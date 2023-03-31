@@ -225,6 +225,9 @@ func (cf *ConfigFile) hideInternals() error {
 
 // Creates a symlink to the backup file.
 func (cf *ConfigFile) Restore() error {
+	if err := helpers.EnsureDirExists(filepath.Dir(cf.PathAbs())); err != nil {
+		return errors.WithStack(err)
+	}
 	if helpers.CheckFileExists(cf.PathAbs()) {
 		if err := os.Remove(cf.PathAbs()); err != nil {
 			return errors.WithMessagef(err, "couldn't remove the original file: %s", cf.PathAbs())
