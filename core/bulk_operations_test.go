@@ -79,8 +79,6 @@ func _setupBackupEnv(backupDir, dir string, num int) []*cf.ConfigFile {
 func _setupRestoreEnv(backupDir, dir string, num int) []*cf.ConfigFile {
 	files := _setupBackupEnv(backupDir, dir, num)
 	BackupFiles(files...)
-	for _, f := range files {
-		os.Remove(f.PathAbs())
-	}
+	os.RemoveAll(dir)
 	return files
 }
