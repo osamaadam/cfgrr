@@ -5,24 +5,23 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   publish:
     name: Build binaries and link them to the release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Setup Golang environment
         uses: actions/setup-go@v3
         with:
           go-version: ">=1.18"
-      - name: Generate binaries
-        run: make build
-      - name: Upload binaries
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: bin/*
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
-          prerelease: true
+      - name: Run Gorelease
+        uses: goreleaser/goreleaser-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
