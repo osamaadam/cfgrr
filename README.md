@@ -14,7 +14,7 @@ This tool was tested on Linux systems only, though it should also work with macO
 
 ### Download the binary
 
-Download the latest binary for [Linux](https://github.com/osamaadam/cfgrr/releases/latest/download/cfgrr_linux), [macOS](https://github.com/osamaadam/cfgrr/releases/latest/download/cfgrr_macos), or [Windows](https://github.com/osamaadam/cfgrr/releases/latest/download/cfgrr_windows.exe), and don't forget to [add the file to your `$PATH`](https://linuxize.com/post/how-to-add-directory-to-path-in-linux/).
+Download the latest binary for your respective platform from the [latest release](https://github.com/osamaadam/cfgrr/releases/latest)
 
 **-or-**
 
