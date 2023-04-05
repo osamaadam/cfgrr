@@ -21,7 +21,7 @@ This enables the user to backup their config files to say Git, and restore the f
 
 func Execute(version, tagdate string) error {
 	if version != "" && tagdate != "" {
-		rootCmd.SetVersionTemplate(fmt.Sprintf("cfgrr %s\n(published on %s)\n", version, tagdate))
+		rootCmd.SetVersionTemplate(fmt.Sprintf("cfgrr %s\npublished on %s\n", version, tagdate))
 		rootCmd.Version = version
 	}
 
