@@ -8,7 +8,6 @@ builds:
       - darwin
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.tagdate={{.CommitDate}}
-
 archives:
   - format: tar.gz
     # this name template makes the OS and Arch compatible with the results of uname.
@@ -35,6 +34,18 @@ changelog:
       - "^test:"
 release:
   name_template: "v{{.Version}}: {{.TagSubject}}"
+  prerelease: auto
+nfpms:
+  - vendor: "Osama Adam"
+    homepage: "https://github.com/osamaadam/cfgrr"
+    maintainer: "Osama Adam <osamaadamme@gmail.com>"
+    description: "A simple configuration manager for your dotfiles"
+    license: "MIT"
+    formats:
+      - deb
+      - rpm
+      - archlinux
+      - apk
 # The lines beneath this are called `modelines`. See `:help modeline`
 # Feel free to remove those if you don't want/use them.
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
