@@ -298,14 +298,34 @@ func (cf *ConfigFile) HardRestore() error {
 
 // Deletes the backup file.
 func (cf *ConfigFile) DeleteBackup(restore bool) error {
+	if err := cf.deleteSymlink(); err != nil {
+		return errors.WithStack(err)
+	}
+
 	if restore {
 		if err := cf.HardRestore(); err != nil {
 			return errors.WithStack(err)
 		}
 	}
 
-	if err := os.Remove(cf.BackupPath()); err != nil {
+	if err := os.Remove(cf.BackupPath()); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+// Deletes the symlink if it exists.
+func (cf *ConfigFile) deleteSymlink() error {
+	// Check if a symlink exists
+	if ok, err := helpers.CheckIfSymlink(cf.PathAbs()); err != nil && !errors.Is(err, os.ErrNotExist) {
+		// An error occurred and it's not because the file doesn't exist
+		return errors.WithStack(err)
+	} else if ok {
+		// The file is a symlink, we need to remove it
+		if err := os.Remove(cf.PathAbs()); err != nil {
+			return errors.WithStack(err)
+		}
 	}
 
 	return nil

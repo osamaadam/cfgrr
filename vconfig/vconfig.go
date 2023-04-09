@@ -13,7 +13,10 @@ type Config struct {
 	BackupDir  string `mapstructure:"backup_dir"`
 	MapFile    string `mapstructure:"map_file"`
 	IgnoreFile string `mapstructure:"ignore_file"`
-	Browsable  bool   `mapstructure:"browsable"`
+	// All files after v1.5.0 are browsable by default.
+	// This basically means that a hard link to the file
+	// is created in the backup directory, typically at home/
+	Browsable bool `mapstructure:"browsable"`
 }
 
 var v *viper.Viper

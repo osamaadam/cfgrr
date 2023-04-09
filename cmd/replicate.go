@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/osamaadam/cfgrr/core"
@@ -21,6 +22,7 @@ var replicateCmd = &cobra.Command{
 		`cfgrr replicate`,
 		`cfgrr replicate --all`,
 		`cfgrr replicate -a`,
+		`cfgrr replicate -a --clean`,
 		`cfgrr replicate ~/browsable/`,
 		`cfgrr replicate ~/browsable/ -a`,
 	}, "\n"),
@@ -52,6 +54,12 @@ func runReplicate(cmd *cobra.Command, args []string) error {
 		baseDir = "home"
 	}
 
+	if clean {
+		if err := os.RemoveAll(baseDir); err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
 	if !all {
 		files, err = prompt.PromptForFileSelection(files, "Select the files to replicate: ")
 		if err != nil {
@@ -73,4 +81,5 @@ func runReplicate(cmd *cobra.Command, args []string) error {
 
 func init() {
 	replicateCmd.Flags().BoolVarP(&all, "all", "a", false, "replicate all files in the backup directory (skip prompt)")
+	replicateCmd.Flags().BoolVar(&clean, "clean", false, "remove all files in the replica directory before replicating")
 }

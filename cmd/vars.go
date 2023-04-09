@@ -1,6 +1,7 @@
 package cmd
 
 var (
+	clean          bool
 	all            bool
 	force          bool
 	replace        bool
