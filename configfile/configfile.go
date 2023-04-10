@@ -14,8 +14,11 @@ import (
 )
 
 type ConfigFile struct {
-	Path      string
-	Perm      os.FileMode
+	Path string
+	Perm os.FileMode
+	// This is to maintain backward compatibility.
+	// Files backed up after v1.5.0 will be browsable by default.
+	// The user could use `replicate` subcommand to turn old files browsable.
 	Browsable bool
 }
 
@@ -48,10 +51,7 @@ func NewConfigFile(path string) (file *ConfigFile, err error) {
 	}
 
 	file = &ConfigFile{
-		Path: relPath,
-		// This is to maintain backward compatibility.
-		// Files backed up after v1.5.0 will be browsable by default.
-		// The user could use `replicate` subcommand to turn old files browsable.
+		Path:      relPath,
 		Browsable: true,
 	}
 
