@@ -5,7 +5,7 @@ on:
     branches:
       - master
   pull_request:
-    type: [opened, reopened]
+    types: [opened, reopened]
 
 jobs:
   test_ubuntu:
@@ -16,6 +16,6 @@ jobs:
       - name: Setup Golang environment
         uses: actions/setup-go@v3
         with:
-          go-version: ">=1.18"
+          go-version: ">=1.21"
       - name: Run tests
         run: go test ./... -v
