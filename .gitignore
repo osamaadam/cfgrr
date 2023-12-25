@@ -2,3 +2,4 @@ testdata
 bin/
 dist/
 cfgrr
+coverage/
