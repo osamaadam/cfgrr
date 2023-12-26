@@ -47,5 +47,5 @@ test:
 cover:
 	$(info Running coverage...)
 	mkdir -p coverage
-	go test -coverprofile=coverage/coverage.out ./...
+	go test -coverprofile=coverage/coverage.out -coverpkg=./... ./...
 	go tool cover -html=coverage/coverage.out -o coverage/coverage.html
