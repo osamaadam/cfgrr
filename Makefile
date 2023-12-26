@@ -44,7 +44,7 @@ test:
 	$(info Running tests...)
 	go test -v ./...
 
-coverage:
+cover:
 	$(info Running coverage...)
 	mkdir -p coverage
 	go test -coverprofile=coverage/coverage.out ./...
