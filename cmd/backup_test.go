@@ -12,8 +12,7 @@ import (
 	"github.com/osamaadam/cfgrr/vconfig"
 )
 
-func TestBackupCmd(t *testing.T) {
-	dummyFiles := []string{
+var _dummyTestFiles = []string{
 		".vimrc",
 		".bashrc",
 		".zshrc",
@@ -21,6 +20,7 @@ func TestBackupCmd(t *testing.T) {
 		".config/nvim/coc-settings.json",
 	}
 
+func TestBackupCmd(t *testing.T) {
 	backupDir := t.TempDir()
 
 	tests := []struct {
@@ -49,7 +49,7 @@ func TestBackupCmd(t *testing.T) {
 			// Creating files to backup
 			_createFilesToBackup(
 				backupDir,
-				dummyFiles...,
+				_dummyTestFiles...,
 			)
 			// initialize a temp backup dir which is deleted after the test
 			backupToDir := t.TempDir()
@@ -58,7 +58,7 @@ func TestBackupCmd(t *testing.T) {
 
 			// cfgrr backup [args...]
 			args := append([]string{"backup"}, tt.args...)
-			t.Logf("cmd: cfgrr %v", strings.Join(args, " "))
+			t.Logf("$ cfgrr %v", strings.Join(args, " "))
 			// Silence the output
 			tCmd.SetArgs(args)
 
