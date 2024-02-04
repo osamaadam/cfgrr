@@ -209,3 +209,38 @@ cfgrr replicate --all
 ```
 
 :mag: For more info, run `cfgrr replicate --help`.
+
+#### Push:
+
+This subcommand allows the user to push the backed up files to a remote git repository.
+
+```sh
+cfgrr push
+```
+
+By default, this will push the changes to the remote `origin` on the current branch.
+
+To push to a different remote or branch:
+
+```sh
+cfgrr push origin backup-branch
+```
+
+:mag: For more info, run `cfgrr push --help`.
+
+#### Clone:
+
+This subcommand allows the user to clone the backed up files from a remote git repository.
+If a repository already exists, the latest changes will be pulled instead.
+
+```sh
+cfgrr clone <remote_url>
+```
+
+By default, this will clone the branch `master`. To clone a different branch:
+
+```sh
+cfgrr clone git@github.com:osamaadam/cfgrr.git --branch backup-branch
+```
+
+:mag: For more info, run `cfgrr clone --help`.
