@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/osamaadam/cfgrr/vconfig"
 	"github.com/spf13/cobra"
@@ -19,9 +20,11 @@ This enables the user to backup their config files to say Git, and restore the f
 	SilenceUsage:  true,
 }
 
-func Execute(version, tagdate string) error {
+func Execute(version, tagdate, releaseUrl string) error {
 	if version != "" && tagdate != "" {
-		rootCmd.SetVersionTemplate(fmt.Sprintf("cfgrr %s\npublished on %s\n", version, tagdate))
+		parsedTagDate, _ := time.Parse(time.RFC3339, tagdate)
+		formattedTagDate := parsedTagDate.Format(time.RFC1123)
+		rootCmd.SetVersionTemplate(fmt.Sprintf("cfgrr %s (%s)\npublished on %s\n", version, releaseUrl, formattedTagDate))
 		rootCmd.Version = version
 	}
 
