@@ -23,7 +23,6 @@ For this to work properly, the user must have already set up the global git conf
 	Example: strings.Join([]string{
 		"cfgrr push",
 		"cfgrr push origin",
-		"cfgrr push origin/master",
 		"cfgrr push origin master",
 	}, "\n"),
 }
@@ -43,7 +42,7 @@ func pushRun(cmd *cobra.Command, args []string) (err error) {
 	if branch == "" {
 		branch = config.GitBranch
 	}
-	// TODO: Initialize the remote if it doesn't exist.
+
 	repo, err := git.PlainInit(config.BackupDir, false)
 	if err != nil {
 		if err == git.ErrRepositoryAlreadyExists {
@@ -60,18 +59,18 @@ func pushRun(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	// Stage the changes.
 	w, err := repo.Worktree()
 
 	if branch != "" {
+		branchRef := plumbing.NewBranchReferenceName(branch)
 		if err := w.Checkout(&git.CheckoutOptions{
-			Branch: plumbing.NewBranchReferenceName(branch),
+			Branch: branchRef,
 			Create: true,
 			Keep:   true,
 		}); err != nil {
 			if err != git.ErrBranchExists {
 				if err := w.Checkout(&git.CheckoutOptions{
-					Branch: plumbing.NewBranchReferenceName(branch),
+					Branch: branchRef,
 					Keep:   true,
 				}); err != nil {
 					return err
@@ -88,6 +87,7 @@ func pushRun(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
+	// Stage the changes.
 	if _, err := w.Add("."); err != nil {
 		return err
 	}
@@ -98,6 +98,7 @@ func pushRun(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if status.IsClean() {
+		// Ignore the push if there are no changes.
 		fmt.Println("No changes to push")
 		return nil
 	}
