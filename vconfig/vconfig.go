@@ -17,6 +17,10 @@ type Config struct {
 	// This basically means that a hard link to the file
 	// is created in the backup directory, typically at home/
 	Browsable bool `mapstructure:"browsable"`
+	// The git remote to push to, defaults to `origin`.
+	GitRemote string `mapstructure:"git_remote"`
+	// The git branch to push to, defaults to current branch.
+	GitBranch string `mapstructure:"git_branch"`
 }
 
 var v *viper.Viper
@@ -161,6 +165,8 @@ func (c *Config) init() error {
 	v.SetDefault("backup_dir", defaultConfigDir)
 	v.SetDefault("map_file", "cfgrrmap.yaml")
 	v.SetDefault("ignore_file", ".cfgrrignore")
+	v.SetDefault("git_remote", "origin")
+	v.SetDefault("git_branch", "master")
 	if err := v.ReadInConfig(); err != nil {
 		if err := c.refresh(); err != nil {
 			return errors.WithStack(err)

@@ -7,4 +7,5 @@ var (
 	tedious        bool
 	configPatterns []string
 	cfgFile        string
+	branch         string
 )
