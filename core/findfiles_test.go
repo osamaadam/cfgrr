@@ -3,10 +3,10 @@ package core
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
-	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/osamaadam/cfgrr/ignorefile"
 )
 
@@ -91,7 +91,7 @@ func TestFindFiles(t *testing.T) {
 				if err != nil {
 					t.Fatalf("unexpected error: %v", err)
 				}
-				if !helpers.Contains(tt.expectedFiles, relativePath) {
+				if !slices.Contains(tt.expectedFiles, relativePath) {
 					t.Errorf("expected to find %s but didn't", relativePath)
 				}
 			}

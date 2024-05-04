@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
 	"github.com/osamaadam/cfgrr/helpers"
@@ -23,7 +24,7 @@ func NewYamlMapFile(path string) *YamlMapFile {
 	base := filepath.Base(path)
 	okayExts := []string{".yaml", ".yml"}
 
-	if !helpers.Contains(okayExts, ext) {
+	if !slices.Contains(okayExts, ext) {
 		path = filepath.Join(filepath.Dir(path), base+".yaml")
 	}
 

@@ -3,22 +3,22 @@ package cmd
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
 	cf "github.com/osamaadam/cfgrr/configfile"
-	"github.com/osamaadam/cfgrr/helpers"
 	"github.com/osamaadam/cfgrr/mapfile"
 	"github.com/osamaadam/cfgrr/vconfig"
 )
 
 var _dummyTestFiles = []string{
-		".vimrc",
-		".bashrc",
-		".zshrc",
-		".config/nvim/init.vim",
-		".config/nvim/coc-settings.json",
-	}
+	".vimrc",
+	".bashrc",
+	".zshrc",
+	".config/nvim/init.vim",
+	".config/nvim/coc-settings.json",
+}
 
 func TestBackupCmd(t *testing.T) {
 	backupDir := t.TempDir()
@@ -86,7 +86,7 @@ func TestBackupCmd(t *testing.T) {
 
 			for _, expectedFile := range tt.expectedFiles {
 				absPath := filepath.Join(backupDir, expectedFile)
-				if !helpers.Contains(backupFiles, absPath) {
+				if !slices.Contains(backupFiles, absPath) {
 					t.Errorf("expected file %s to be backed up, but it wasn't", absPath)
 				}
 			}
