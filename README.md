@@ -12,6 +12,12 @@ This tool was tested on Linux systems only, though it should also work with macO
 
 ## Installation
 
+### Using `go install`
+
+```sh
+go install github.com/osamaadam/cfgrr@latest
+```
+
 ### Download the binary
 
 Download the latest binary for your respective platform from the [latest release](https://github.com/osamaadam/cfgrr/releases/latest)
