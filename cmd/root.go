@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/osamaadam/cfgrr/vconfig"
@@ -20,13 +21,22 @@ This enables the user to backup their config files to say Git, and restore the f
 	SilenceUsage:  true,
 }
 
-func Execute(version, tagdate, releaseUrl string) error {
-	if version != "" && tagdate != "" {
-		parsedTagDate, _ := time.Parse(time.RFC3339, tagdate)
+func Execute(version, tagdate, pkgPath string) error {
+	releaseUrl := "https://" + pkgPath + "/releases/tag/" + version
+	versionTemplate := fmt.Sprintf("cfgrr %s (%s)\n", version, releaseUrl)
+
+	if tagdate != "" {
+		tagInt, err := strconv.ParseInt(tagdate, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		parsedTagDate := time.Unix(tagInt, 0)
 		formattedTagDate := parsedTagDate.Format(time.RFC1123)
-		rootCmd.SetVersionTemplate(fmt.Sprintf("cfgrr %s (%s)\npublished on %s\n", version, releaseUrl, formattedTagDate))
-		rootCmd.Version = version
+		versionTemplate += fmt.Sprintf("published on %s\n", formattedTagDate)
 	}
+
+	rootCmd.Version = version
+	rootCmd.SetVersionTemplate(versionTemplate)
 
 	if err := rootCmd.Execute(); err != nil {
 		if tedious {

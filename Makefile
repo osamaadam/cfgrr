@@ -1,7 +1,7 @@
 .PHONY: all build_linux build_macos build_windows build_native clean install uninstall test
 
 BUILD_VERSION := $(shell git describe --tags --always)
-TAG_DATE := $(shell git log -1 --format=%cd --date=rfc $(BUILD_VERSION))
+TAG_DATE := $(shell git log -1 --format=%cd --date=unix $(BUILD_VERSION))
 INSTALL_DIR := ${HOME}/go/bin
 INSTALL_TARGET := $(INSTALL_DIR)/$(NAME)
 NAME := cfgrr
