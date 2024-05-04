@@ -60,6 +60,9 @@ func pushRun(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	w, err := repo.Worktree()
+	if err != nil {
+		return err
+	}
 
 	if branch != "" {
 		branchRef := plumbing.NewBranchReferenceName(branch)
