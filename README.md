@@ -250,3 +250,28 @@ cfgrr clone git@github.com:osamaadam/cfgrr.git --branch backup-branch
 ```
 
 :mag: For more info, run `cfgrr clone --help`.
+
+## Configuration Details
+
+### MapFile Format Support
+
+As of the latest version, `cfgrr` now supports both YAML and JSON formats for the map file:
+
+- **YAML** (default): Files end with `.yaml` or `.yml`
+
+  ```sh
+  cfgrr set map_file cfgrrmap.yaml
+  ```
+
+- **JSON**: Files end with `.json`
+  ```sh
+  cfgrr set map_file cfgrrmap.json
+  ```
+
+The mapfile type is automatically determined by the file extension. When creating a new mapfile, you can specify the path with your preferred extension:
+
+```sh
+cfgrr backup ~/.bashrc -m /path/to/your/cfgrrmap.json
+```
+
+You can switch between formats at any time by changing the mapfile path in your configuration.
