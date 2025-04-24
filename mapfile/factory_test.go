@@ -18,7 +18,7 @@ func TestNewMapFile(t *testing.T) {
 		{"normal path", "/some/path/config", ".yaml", false},
 		{"already yaml", "/some/path/config.yaml", ".yaml", false},
 		{"already yml", "/some/path/config.yml", ".yml", false},
-		{"UNIMPLEMENTED: json", "/some/path/config.json", "", true},
+		{"json format", "/some/path/config.json", ".json", false},
 	}
 
 	for _, tt := range tests {

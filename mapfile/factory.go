@@ -19,10 +19,10 @@ func NewMapFile(optPath ...string) IMapFile {
 
 	switch ext {
 	case ".json":
-		// TODO: implement JSON mapfile, maybe
+		return NewJsonMapFile(path)
+	case ".yml", ".yaml":
+		return NewYamlMapFile(path)
 	default:
 		return NewYamlMapFile(path)
 	}
-
-	return nil
 }
